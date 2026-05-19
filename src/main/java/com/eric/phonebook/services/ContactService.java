@@ -2,27 +2,70 @@ package com.eric.phonebook.services;
 
 import java.util.List;
 
+import org.springframework.stereotype.Service;
+
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.exceptions.ContactNotFoundException;
 import com.eric.phonebook.repositories.ContactRepository;
 
+@Service
 public class ContactService {
 
-	private ContactRepository repository;
-
-	public ContactService() {
-	}
+	private final ContactRepository repository;
 
 	public ContactService(ContactRepository repository) {
 		this.repository = repository;
 	}
 
+	// ================= SAVE =================
+
 	public void addContact(Contact contact) {
 		repository.save(contact);
 	}
 
+	// ================= FIND ALL =================
+
+	public List<Contact> listAll() {
+		return repository.findAll();
+	}
+
+	// ================= FIND BY ID =================
+
+	public Contact findById(Long id) {
+
+		return repository.findById(id).orElseThrow(() -> new ContactNotFoundException());
+	}
+
+	// ================= DELETE =================
+
+	public void deleteContact(Long id) {
+
+		Contact contact = findById(id);
+
+		repository.delete(contact);
+	}
+
+	// ================= UPDATE =================
+
+	public Contact updateContact(Long id, Contact updateContact) {
+
+		Contact existingContact = findById(id);
+
+		existingContact.setName(updateContact.getName());
+		existingContact.setPhone(updateContact.getPhone());
+		existingContact.setEmail(updateContact.getEmail());
+		existingContact.setType(updateContact.getType());
+		existingContact.setAddress(updateContact.getAddress());
+
+		return repository.save(existingContact);
+	}
+	
+	// ================= FIND BY NAME =================
+	
 	public Contact findByName(String name) {
+		
 		for (Contact contact : repository.findAll()) {
+			
 			if (contact.getName().equalsIgnoreCase(name)) {
 				return contact;
 			}
@@ -30,7 +73,4 @@ public class ContactService {
 		throw new ContactNotFoundException();
 	}
 
-	public List<Contact> listAll() {
-		return repository.findAll();
-	}
 }
