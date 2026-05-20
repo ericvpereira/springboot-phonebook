@@ -11,6 +11,8 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "tb_contacts")
@@ -20,12 +22,14 @@ public class Contact {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private long id;
 
+	@NotBlank
 	@Column(name = "contact_name")
 	private String name;
 
 	@Column(name = "phone_number")
 	private String phone;
 
+	@Email
 	@Column(name = "email")
 	private String email;
 
