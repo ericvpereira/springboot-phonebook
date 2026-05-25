@@ -6,7 +6,10 @@ import org.springframework.stereotype.Service;
 
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.exceptions.ContactNotFoundException;
+import com.eric.phonebook.exceptions.DatabaseException;
 import com.eric.phonebook.repositories.ContactRepository;
+
+import jakarta.validation.ValidationException;
 
 @Service
 public class ContactService {
@@ -20,6 +23,11 @@ public class ContactService {
 	// ================= SAVE =================
 
 	public void addContact(Contact contact) {
+
+		if (repository.findByEmail(contact.getEmail()).isPresent()) {
+			throw new ValidationException("Email already registered");
+		}
+
 		repository.save(contact);
 	}
 
@@ -40,9 +48,18 @@ public class ContactService {
 
 	public void deleteContact(Long id) {
 
-		Contact contact = findById(id);
+		try {
 
-		repository.delete(contact);
+			Contact contact = findById(id);
+
+			repository.delete(contact);
+
+		} catch (Exception e) {
+
+			throw new DatabaseException("Error deleting contact");
+
+		}
+
 	}
 
 	// ================= UPDATE =================
@@ -59,18 +76,12 @@ public class ContactService {
 
 		return repository.save(existingContact);
 	}
-	
+
 	// ================= FIND BY NAME =================
-	
+
 	public Contact findByName(String name) {
-		
-		for (Contact contact : repository.findAll()) {
-			
-			if (contact.getName().equalsIgnoreCase(name)) {
-				return contact;
-			}
-		}
-		throw new ContactNotFoundException();
+
+		return repository.findByNameIgnoreCase(name).orElseThrow(() -> new ContactNotFoundException());
 	}
 
 }
