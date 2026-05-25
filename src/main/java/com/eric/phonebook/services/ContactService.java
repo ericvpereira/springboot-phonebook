@@ -22,13 +22,13 @@ public class ContactService {
 
 	// ================= SAVE =================
 
-	public void addContact(Contact contact) {
+	public Contact addContact(Contact contact) {
 
 		if (repository.findByEmail(contact.getEmail()).isPresent()) {
 			throw new ValidationException("Email already registered");
 		}
 
-		repository.save(contact);
+		return repository.save(contact);
 	}
 
 	// ================= FIND ALL =================
