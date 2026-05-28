@@ -11,8 +11,11 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.eric.phonebook.dto.ContactDTO;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.services.ContactService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contacts")
@@ -25,8 +28,8 @@ public class ContactController {
 	}
 
 	@GetMapping
-	public List<Contact> findAll() {
-		return service.listAll();
+	public List<ContactDTO> findAll() {
+		return service.listAll().stream().map(ContactDTO::new).toList();
 	}
 
 	@GetMapping("/{id}")
@@ -35,14 +38,21 @@ public class ContactController {
 	}
 
 	@PostMapping
-	public Contact insert(@RequestBody Contact contact) {
-		return service.addContact(contact);
+	public ContactDTO insert(@Valid @RequestBody ContactDTO dto) {
+
+		Contact entity = dto.toEntity();
+
+		entity = service.addContact(entity);
+
+		return new ContactDTO(entity);
 	}
 
 	@PutMapping("/{id}")
-	public Contact update(@PathVariable Long id, @RequestBody Contact contact) {
+	public ContactDTO update(@PathVariable Long id, @Valid @RequestBody ContactDTO dto) {
 
-		return service.updateContact(id, contact);
+		Contact entity = service.updateContact(id, dto.toEntity());
+
+		return new ContactDTO(entity);
 	}
 
 	@DeleteMapping("/{id}")
