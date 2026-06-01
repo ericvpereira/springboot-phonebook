@@ -15,10 +15,13 @@ import com.eric.phonebook.dto.ContactDTO;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.services.ContactService;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contacts")
+@Tag(name = "Contacts", description = "Phonebook management")
 public class ContactController {
 
 	private final ContactService service;
@@ -33,8 +36,12 @@ public class ContactController {
 	}
 
 	@GetMapping("/{id}")
-	public Contact findById(@PathVariable Long id) {
-		return service.findById(id);
+	@Operation(summary = "Find contact by id")
+	public ContactDTO findById(@PathVariable Long id) {
+
+		Contact contact = service.findById(id);
+
+		return new ContactDTO(contact);
 	}
 
 	@PostMapping

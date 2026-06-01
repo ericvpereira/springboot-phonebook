@@ -1,28 +1,35 @@
 package com.eric.phonebook.dto;
 
-import com.eric.phonebook.entities.Address;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.enums.ContactType;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 
+@Schema(description = "Contact data")
 public class ContactDTO {
 
+	@Schema(description = "Contact id", example = "1")
 	private Long id;
 
 	@NotBlank(message = "Name is required")
+	@Schema(description = "Contact name", example = "Eric Vieira")
 	private String name;
 
 	@NotBlank(message = "Phone is required")
+	@Schema(description = "Phone number", example = "11999999999")
 	private String phone;
 
 	@Email(message = "Invalid email")
+	@Schema(description = "Email address", example = "eric@gmail.com")
 	private String email;
 
 	private ContactType type;
 
-	private Address address;
+	@Valid
+	private AddressDTO address;
 
 	public ContactDTO() {
 	}
@@ -35,7 +42,7 @@ public class ContactDTO {
 		phone = entity.getPhone();
 		email = entity.getEmail();
 		type = entity.getType();
-		address = entity.getAddress();
+		address = new AddressDTO(entity.getAddress());
 	}
 
 	// ================= DTO -> ENTITY =================
@@ -49,7 +56,7 @@ public class ContactDTO {
 		contact.setPhone(phone);
 		contact.setEmail(email);
 		contact.setType(type);
-		contact.setAddress(address);
+		contact.setAddress(address.toEntity());
 
 		return contact;
 
@@ -97,11 +104,11 @@ public class ContactDTO {
 		this.type = type;
 	}
 
-	public Address getAddress() {
+	public AddressDTO getAddress() {
 		return address;
 	}
 
-	public void setAddress(Address address) {
+	public void setAddress(AddressDTO address) {
 		this.address = address;
 	}
 

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Service;
 
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.exceptions.ContactNotFoundException;
-import com.eric.phonebook.exceptions.DatabaseException;
 import com.eric.phonebook.repositories.ContactRepository;
 
 import jakarta.validation.ValidationException;
@@ -41,32 +40,25 @@ public class ContactService {
 
 	public Contact findById(Long id) {
 
-		return repository.findById(id).orElseThrow(() -> new ContactNotFoundException());
+		Contact entity = repository.findById(id).orElseThrow(ContactNotFoundException::new);
+
+		return entity;
 	}
 
 	// ================= DELETE =================
 
 	public void deleteContact(Long id) {
 
-		try {
+		Contact contact = repository.findById(id).orElseThrow(ContactNotFoundException::new);
 
-			Contact contact = findById(id);
-
-			repository.delete(contact);
-
-		} catch (Exception e) {
-
-			throw new DatabaseException("Error deleting contact");
-
-		}
-
+		repository.delete(contact);
 	}
 
 	// ================= UPDATE =================
 
 	public Contact updateContact(Long id, Contact updateContact) {
 
-		Contact existingContact = findById(id);
+		Contact existingContact = repository.findById(id).orElseThrow(ContactNotFoundException::new);
 
 		existingContact.setName(updateContact.getName());
 		existingContact.setPhone(updateContact.getPhone());
