@@ -1,5 +1,8 @@
 # PhoneBook API
 
+<img width="1381" height="319" alt="image" src="https://github.com/user-attachments/assets/52d15665-5cd3-48df-b3b0-1cb78536879d" />
+
+
 Sistema de agenda telefônica desenvolvido com Spring Boot.
 
 Permite cadastrar, listar, atualizar, buscar e remover contatos, utilizando arquitetura em camadas, persistência com JPA/Hibernate e interface web com Thymeleaf.
