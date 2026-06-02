@@ -73,7 +73,7 @@ public class ContactService {
 
 	public Contact findByName(String name) {
 
-		return repository.findByNameIgnoreCase(name).orElseThrow(() -> new ContactNotFoundException());
+		return repository.findByNameIgnoreCase(name).orElseThrow(ContactNotFoundException::new);
 	}
 
 }
