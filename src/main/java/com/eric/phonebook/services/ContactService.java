@@ -2,6 +2,8 @@ package com.eric.phonebook.services;
 
 import java.util.List;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import com.eric.phonebook.entities.Contact;
@@ -34,6 +36,10 @@ public class ContactService {
 
 	public List<Contact> listAll() {
 		return repository.findAll();
+	}
+
+	public Page<Contact> listAll(Pageable pageable) {
+		return repository.findAll(pageable);
 	}
 
 	// ================= FIND BY ID =================
