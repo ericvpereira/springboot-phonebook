@@ -45,23 +45,6 @@ public class ContactDTO {
 		address = new AddressDTO(entity.getAddress());
 	}
 
-	// ================= DTO -> ENTITY =================
-
-	public Contact toEntity() {
-
-		Contact contact = new Contact();
-
-		contact.setId(id);
-		contact.setName(name);
-		contact.setPhone(phone);
-		contact.setEmail(email);
-		contact.setType(type);
-		contact.setAddress(address.toEntity());
-
-		return contact;
-
-	}
-
 	// ================= GETTERS / SETTERS =================
 
 	public Long getId() {

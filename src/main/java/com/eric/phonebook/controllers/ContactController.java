@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.eric.phonebook.dto.ContactDTO;
+import com.eric.phonebook.dto.ContactInsertDTO;
+import com.eric.phonebook.dto.ContactUpdateDTO;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.services.ContactService;
 
@@ -52,7 +54,7 @@ public class ContactController {
 	@PostMapping
 	@ResponseStatus(HttpStatus.CREATED)
 	@Operation(summary = "Created new contact")
-	public ContactDTO insert(@Valid @RequestBody ContactDTO dto) {
+	public ContactDTO insert(@Valid @RequestBody ContactInsertDTO dto) {
 
 		Contact entity = service.addContact(dto.toEntity());
 
@@ -61,7 +63,7 @@ public class ContactController {
 
 	@PutMapping("/{id}")
 	@Operation(summary = "Update contact")
-	public ContactDTO update(@PathVariable Long id, @Valid @RequestBody ContactDTO dto) {
+	public ContactDTO update(@PathVariable Long id, @Valid @RequestBody ContactUpdateDTO dto) {
 
 		Contact entity = service.updateContact(id, dto.toEntity());
 

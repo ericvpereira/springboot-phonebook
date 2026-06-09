@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.eric.phonebook.dto.ContactDTO;
+import com.eric.phonebook.dto.ContactInsertDTO;
+import com.eric.phonebook.dto.ContactUpdateDTO;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.services.ContactService;
 
@@ -44,7 +46,7 @@ public class WebContactController {
 	// ================= SAVE CONTACT =================
 
 	@PostMapping("/save")
-	public String save(ContactDTO dto) {
+	public String save(ContactInsertDTO dto) {
 
 		service.addContact(dto.toEntity());
 
@@ -66,7 +68,7 @@ public class WebContactController {
 	// ================= UPDATE CONTACT =================
 
 	@PostMapping("/update/{id}")
-	public String update(@PathVariable Long id, ContactDTO dto) {
+	public String update(@PathVariable Long id, ContactUpdateDTO dto) {
 
 		service.updateContact(id, dto.toEntity());
 
