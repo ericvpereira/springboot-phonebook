@@ -18,7 +18,7 @@ import com.eric.phonebook.dto.ContactDTO;
 import com.eric.phonebook.dto.ContactInsertDTO;
 import com.eric.phonebook.dto.ContactUpdateDTO;
 import com.eric.phonebook.entities.Contact;
-import com.eric.phonebook.services.ContactService;
+import com.eric.phonebook.services.ContactServiceTest;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,9 +29,9 @@ import jakarta.validation.Valid;
 @Tag(name = "Contacts", description = "Phonebook management")
 public class ContactController {
 
-	private final ContactService service;
+	private final ContactServiceTest service;
 
-	public ContactController(ContactService service) {
+	public ContactController(ContactServiceTest service) {
 		this.service = service;
 	}
 

@@ -8,7 +8,7 @@ import com.eric.phonebook.entities.Address;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.enums.ContactType;
 import com.eric.phonebook.repositories.ContactRepository;
-import com.eric.phonebook.services.ContactService;
+import com.eric.phonebook.services.ContactServiceTest;
 
 @Configuration
 public class TestConfig {
@@ -20,7 +20,7 @@ public class TestConfig {
 	}
 
 	@Bean
-	CommandLineRunner run(ContactService service) {
+	CommandLineRunner run(ContactServiceTest service) {
 
 		return args -> {
 
