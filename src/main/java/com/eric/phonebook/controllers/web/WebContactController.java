@@ -11,15 +11,15 @@ import com.eric.phonebook.dto.ContactDTO;
 import com.eric.phonebook.dto.ContactInsertDTO;
 import com.eric.phonebook.dto.ContactUpdateDTO;
 import com.eric.phonebook.entities.Contact;
-import com.eric.phonebook.services.ContactServiceTest;
+import com.eric.phonebook.services.ContactService;
 
 @Controller
 @RequestMapping("/web/contacts")
 public class WebContactController {
 
-	private final ContactServiceTest service;
+	private final ContactService service;
 
-	public WebContactController(ContactServiceTest service) {
+	public WebContactController(ContactService service) {
 		this.service = service;
 	}
 
