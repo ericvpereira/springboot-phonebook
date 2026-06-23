@@ -32,10 +32,52 @@ public class ContactUpdateDTO {
 		contact.setPhone(phone);
 		contact.setEmail(email);
 		contact.setType(type);
-		contact.setAddress(address.toEntity());
+		if (address != null) {
+			contact.setAddress(address.toEntity());
+		}
 
 		return contact;
 
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getPhone() {
+		return phone;
+	}
+
+	public void setPhone(String phone) {
+		this.phone = phone;
+	}
+
+	public String getEmail() {
+		return email;
+	}
+
+	public void setEmail(String email) {
+		this.email = email;
+	}
+
+	public ContactType getType() {
+		return type;
+	}
+
+	public void setType(ContactType type) {
+		this.type = type;
+	}
+
+	public AddressDTO getAddress() {
+		return address;
+	}
+
+	public void setAddress(AddressDTO address) {
+		this.address = address;
 	}
 
 }
