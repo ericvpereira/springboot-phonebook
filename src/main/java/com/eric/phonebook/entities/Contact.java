@@ -16,7 +16,7 @@ import jakarta.validation.constraints.NotBlank;
 
 @Entity
 @Table(name = "tb_contacts")
-public class Contact {
+public class Contact extends BaseEntity {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

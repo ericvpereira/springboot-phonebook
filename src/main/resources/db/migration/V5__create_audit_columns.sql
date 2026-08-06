@@ -1,0 +1,5 @@
+ALTER TABLE tb_contacts
+
+ADD COLUMN created_at TIMESTAMP,
+
+ADD COLUMN updated_at TIMESTAMP;
