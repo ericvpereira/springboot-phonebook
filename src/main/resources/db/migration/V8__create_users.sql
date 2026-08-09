@@ -10,6 +10,6 @@ CREATE TABLE tb_users (
 	
 	created_at TIMESTAMP,
 	
-	updaated_at TIMESTAMP
+	updated_at TIMESTAMP
 	
 );
