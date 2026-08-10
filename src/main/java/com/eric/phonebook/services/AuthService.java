@@ -2,11 +2,13 @@ package com.eric.phonebook.services;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.stereotype.Service;
 
 import com.eric.phonebook.dto.auth.LoginRequest;
 import com.eric.phonebook.dto.auth.LoginResponse;
 import com.eric.phonebook.security.JwtService;
 
+@Service
 public class AuthService {
 
 	private final AuthenticationManager authenticationManager;
