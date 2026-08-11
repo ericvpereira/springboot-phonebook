@@ -12,60 +12,57 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "tb_user")
+@Table(name = "tb_users")
 public class User extends BaseEntity {
-	
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
-	
-	@Column(nullable = false, unique = true, length = 80)
-	private String username;
-	
-	@Column(nullable = false)
-	private String password;
-	
-	@Enumerated(EnumType.STRING)
-	@Column(nullable = false, length = 20)
-	private Role role;
-	
-	public User() {
-		// TODO Auto-generated constructor stub
-	}
 
-	public User(String username, String password, Role role) {
-		super();
-		this.username = username;
-		this.password = password;
-		this.role = role;
-	}
-	
-	public Long getId() {
-		return id;
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	public String getUsername() {
-		return username;
-	}
+    @Column(nullable = false, unique = true)
+    private String username;
 
-	public void setUsername(String username) {
-		this.username = username;
-	}
+    @Column(nullable = false)
+    private String password;
 
-	public String getPassword() {
-		return password;
-	}
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Role role;
 
-	public void setPassword(String password) {
-		this.password = password;
-	}
+    public User() {
+    }
 
-	public Role getRole() {
-		return role;
-	}
+    public User(String username, String password, Role role) {
+        this.username = username;
+        this.password = password;
+        this.role = role;
+    }
 
-	public void setRole(Role role) {
-		this.role = role;
-	}
-	 
+    public Long getId() {
+        return id;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

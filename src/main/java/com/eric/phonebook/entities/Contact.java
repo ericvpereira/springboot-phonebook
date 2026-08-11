@@ -18,89 +18,92 @@ import jakarta.validation.constraints.NotBlank;
 @Table(name = "tb_contacts")
 public class Contact extends BaseEntity {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
-	@NotBlank
-	@Column(name = "contact_name")
-	private String name;
+    @NotBlank
+    @Column(name = "contact_name", nullable = false)
+    private String name;
 
-	@Column(name = "phone_number")
-	private String phone;
+    @Column(name = "phone_number")
+    private String phone;
 
-	@Email
-	@Column(name = "email")
-	private String email;
+    @Email
+    private String email;
 
-	@Enumerated(EnumType.STRING)
-	private ContactType type;
+    @Enumerated(EnumType.STRING)
+    private ContactType type;
 
-	@Embedded
-	private Address address;
+    @Embedded
+    private Address address;
 
-	public Contact() {
-	}
+    public Contact() {
+    }
 
-	public Contact(String name, String phone, String email, ContactType type) {
-		this.name = name;
-		this.phone = phone;
-		this.email = email;
-		this.type = type;
-	}
+    public Contact(String name, String phone, String email,
+                   ContactType type) {
+        this.name = name;
+        this.phone = phone;
+        this.email = email;
+        this.type = type;
+    }
 
-	public long getId() {
-		return id;
-	}
+    public Long getId() {
+        return id;
+    }
 
-	public void setId(long id) {
-		this.id = id;
-	}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-	public String getName() {
-		return name;
-	}
+    public String getName() {
+        return name;
+    }
 
-	public void setName(String name) {
-		this.name = name;
-	}
+    public void setName(String name) {
+        this.name = name;
+    }
 
-	public String getPhone() {
-		return phone;
-	}
+    public String getPhone() {
+        return phone;
+    }
 
-	public void setPhone(String phone) {
-		this.phone = phone;
-	}
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
 
-	public String getEmail() {
-		return email;
-	}
+    public String getEmail() {
+        return email;
+    }
 
-	public void setEmail(String email) {
-		this.email = email;
-	}
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
-	public ContactType getType() {
-		return type;
-	}
+    public ContactType getType() {
+        return type;
+    }
 
-	public void setType(ContactType type) {
-		this.type = type;
-	}
+    public void setType(ContactType type) {
+        this.type = type;
+    }
 
-	public Address getAddress() {
-		return address;
-	}
+    public Address getAddress() {
+        return address;
+    }
 
-	public void setAddress(Address address) {
-		this.address = address;
-	}
+    public void setAddress(Address address) {
+        this.address = address;
+    }
 
-	@Override
-	public String toString() {
-		return "Contact [id=" + id + ", name=" + name + ", phone=" + phone + ", email=" + email + ", type=" + type
-				+ ", address=" + address + "]";
-	}
-
+    @Override
+    public String toString() {
+        return "Contact [id=" + id
+                + ", name=" + name
+                + ", phone=" + phone
+                + ", email=" + email
+                + ", type=" + type
+                + ", address=" + address + "]";
+    }
 }

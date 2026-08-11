@@ -1,117 +1,167 @@
 package com.eric.phonebook.controllers;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doNothing;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Arrays;
+
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.enums.ContactType;
 import com.eric.phonebook.services.ContactService;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ContactController.class)
-public class ContactControllerTest {
+@AutoConfigureMockMvc(addFilters = false)
+class ContactControllerTest {
 
-	@Autowired
-	private MockMvc mockMvc;
+    @Autowired
+    private MockMvc mockMvc;
 
-	@MockBean
-	private ContactService service;
+    @Autowired
+    private ObjectMapper objectMapper;
 
-	@Test
-	void shouldReturnContactById() throws Exception {
+    @MockBean
+    private ContactService service;
 
-		Contact contact = new Contact("Eric", "11999999999", "eric@gmail.com", ContactType.FRIEND);
+    private Contact contact;
 
-		contact.setId(1L);
+    @BeforeEach
+    void setUp() {
 
-		when(service.findById(1L)).thenReturn(contact);
+        contact = new Contact(
+                "Eric",
+                "11999999999",
+                "eric@email.com",
+                ContactType.FRIEND
+        );
 
-		mockMvc.perform(get("/contacts/1")).andExpect(status().isOk());
+        contact.setId(1L);
+    }
 
-	}
+    @Test
+    void shouldFindAllContacts() throws Exception {
 
-	@Test
-	void shouldReturnPageOfContacts() throws Exception {
+        when(service.findAll())
+                .thenReturn(Arrays.asList(contact));
 
-		mockMvc.perform(get("/contacts")).andExpect(status().isOk());
-	}
+        mockMvc.perform(
+                get("/contacts")
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$[0].id").value(1))
+        .andExpect(jsonPath("$[0].name").value("Eric"))
+        .andExpect(jsonPath("$[0].phone")
+                .value("11999999999"))
+        .andExpect(jsonPath("$[0].email")
+                .value("eric@email.com"));
 
-	@Test
-	void shouldCreateContact() throws Exception {
+        verify(service).findAll();
+    }
 
-		String json = """
-				{
-					"name":"Eric",
-					"phone":"11999999999",
-					"email":"eric@gmail.com",
-					"type":"FRIEND"
-				}
-				""";
+    @Test
+    void shouldFindContactById() throws Exception {
 
-		Contact contact = new Contact("Eric", "11999999999", "eric@gmail.com", ContactType.FRIEND);
+        when(service.findById(1L))
+                .thenReturn(contact);
 
-		when(service.addContact(org.mockito.ArgumentMatchers.any())).thenReturn(contact);
+        mockMvc.perform(
+                get("/contacts/1")
+        )
+        .andExpect(status().isOk())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("Eric"));
 
-		mockMvc.perform(post("/contacts").contentType(APPLICATION_JSON).content(json)).andExpect(status().isCreated());
+        verify(service).findById(1L);
+    }
 
-	}
+    @Test
+    void shouldCreateContact() throws Exception {
 
-	@Test
-	void shouldDeleteContact() throws Exception {
+        when(service.insert(any(Contact.class)))
+                .thenReturn(contact);
 
-		mockMvc.perform(delete("/contacts/1")).andExpect(status().isNoContent());
+        mockMvc.perform(
+                post("/contacts")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(objectMapper.writeValueAsString(contact))
+        )
+        .andExpect(status().isCreated())
+        .andExpect(jsonPath("$.id").value(1))
+        .andExpect(jsonPath("$.name").value("Eric"));
 
-	}
+        verify(service).insert(any(Contact.class));
+    }
 
-	@Test
-	void shouldUpdateContact() throws Exception {
+    @Test
+    void shouldUpdateContact() throws Exception {
 
-		String json = """
-				{
-					"name":"Eric Updated",
-					"phone":"11988888888",
-					"email":"novo@gmail.com",
-					"type":"WORK"
-				}
-				""";
+        Contact updatedContact = new Contact(
+                "Eric Pereira",
+                "11888888888",
+                "ericpereira@email.com",
+                ContactType.WORK
+        );
 
-		Contact updated = new Contact("Eric Updated", "11988888888", "novo@gmail.com", ContactType.WORK);
+        updatedContact.setId(1L);
 
-		when(service.updateContact(org.mockito.ArgumentMatchers.eq(1L),
-				org.mockito.ArgumentMatchers.any(Contact.class))).thenReturn(updated);
+        when(service.update(
+                eq(1L),
+                any(Contact.class)
+        )).thenReturn(updatedContact);
 
-		mockMvc.perform(put("/contacts/1").contentType(APPLICATION_JSON).content(json)).andExpect(status().isOk());
+        mockMvc.perform(
+                put("/contacts/1")
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .content(
+                        objectMapper.writeValueAsString(
+                            updatedContact
+                        )
+                    )
+        )
+        .andExpect(status().isOk())
+        .andExpect(
+            jsonPath("$.name")
+                .value("Eric Pereira")
+        )
+        .andExpect(
+            jsonPath("$.phone")
+                .value("11888888888")
+        );
 
-	}
-	
-	@Test
-	void shouldFindContactByName() throws Exception {
-		
-		Contact contact = new Contact(
-					"Eric",
-					"11999999999",
-					"eric@gmail.com",
-					ContactType.FRIEND
-				);
-		
-		when(service.findByName("Eric"))
-			.thenReturn(contact);
-		
-		mockMvc.perform(
-				get("/contacts/search")
-					.param("name", "Eric"))
-				.andExpect(status().isOk());
-		
-	}
+        verify(service)
+                .update(eq(1L), any(Contact.class));
+    }
 
+    @Test
+    void shouldDeleteContact() throws Exception {
+
+        doNothing()
+                .when(service)
+                .delete(1L);
+
+        mockMvc.perform(
+                delete("/contacts/1")
+        )
+        .andExpect(status().isNoContent());
+
+        verify(service).delete(1L);
+    }
 }

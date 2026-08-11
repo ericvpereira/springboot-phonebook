@@ -1,8 +1,9 @@
 package com.eric.phonebook.controllers;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import java.net.URI;
+import java.util.List;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -10,77 +11,63 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.eric.phonebook.dto.ContactDTO;
-import com.eric.phonebook.dto.ContactInsertDTO;
-import com.eric.phonebook.dto.ContactUpdateDTO;
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.services.ContactService;
 
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/contacts")
-@Tag(name = "Contacts", description = "Phonebook management")
 public class ContactController {
 
-	private final ContactService service;
+    private final ContactService service;
 
-	public ContactController(ContactService service) {
-		this.service = service;
-	}
+    public ContactController(ContactService service) {
+        this.service = service;
+    }
 
-	@GetMapping
-	@Operation(summary = "List all contacts")
-	public Page<ContactDTO> findAll(Pageable pageable) {
+    @GetMapping
+    public ResponseEntity<List<Contact>> findAll() {
+        return ResponseEntity.ok(service.findAll());
+    }
 
-		return service.listAll(pageable).map(ContactDTO::new);
-	}
+    @GetMapping("/{id}")
+    public ResponseEntity<Contact> findById(
+            @PathVariable Long id) {
 
-	@GetMapping("/{id}")
-	@Operation(summary = "Find contact by id")
-	public ContactDTO findById(@PathVariable Long id) {
+        return ResponseEntity.ok(service.findById(id));
+    }
 
-		Contact contact = service.findById(id);
+    @PostMapping
+    public ResponseEntity<Contact> insert(
+            @Valid @RequestBody Contact contact) {
 
-		return new ContactDTO(contact);
-	}
+        Contact saved = service.insert(contact);
 
-	@PostMapping
-	@ResponseStatus(HttpStatus.CREATED)
-	@Operation(summary = "Created new contact")
-	public ContactDTO insert(@Valid @RequestBody ContactInsertDTO dto) {
+        URI uri = URI.create("/contacts/" + saved.getId());
 
-		Contact entity = service.addContact(dto.toEntity());
+        return ResponseEntity
+                .created(uri)
+                .body(saved);
+    }
 
-		return new ContactDTO(entity);
-	}
+    @PutMapping("/{id}")
+    public ResponseEntity<Contact> update(
+            @PathVariable Long id,
+            @Valid @RequestBody Contact contact) {
 
-	@PutMapping("/{id}")
-	@Operation(summary = "Update contact")
-	public ContactDTO update(@PathVariable Long id, @Valid @RequestBody ContactUpdateDTO dto) {
+        return ResponseEntity.ok(
+            service.update(id, contact));
+    }
 
-		Contact entity = service.updateContact(id, dto.toEntity());
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> delete(
+            @PathVariable Long id) {
 
-		return new ContactDTO(entity);
-	}
+        service.delete(id);
 
-	@DeleteMapping("/{id}")
-	@ResponseStatus(HttpStatus.NO_CONTENT)
-	public void delete(@PathVariable Long id) {
-		service.deleteContact(id);
-	}
-
-	@GetMapping("/search")
-	@Operation(summary = "Find contact by name")
-	public ContactDTO findByName(@RequestParam String name) {
-
-		return new ContactDTO(service.findByName(name));
-	}
-
+        return ResponseEntity.noContent().build();
+    }
 }
