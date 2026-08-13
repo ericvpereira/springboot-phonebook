@@ -21,15 +21,19 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.enums.ContactType;
+import com.eric.phonebook.security.CustomUserDetailsService;
+import com.eric.phonebook.security.JwtService;
 import com.eric.phonebook.services.ContactService;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 @WebMvcTest(ContactController.class)
 @AutoConfigureMockMvc(addFilters = false)
+@ActiveProfiles("test")
 class ContactControllerTest {
 
     @Autowired
@@ -40,6 +44,12 @@ class ContactControllerTest {
 
     @MockBean
     private ContactService service;
+
+    @MockBean
+    private JwtService jwtService;
+
+    @MockBean
+    private CustomUserDetailsService customUserDetailsService;
 
     private Contact contact;
 
@@ -101,7 +111,9 @@ class ContactControllerTest {
         mockMvc.perform(
                 post("/contacts")
                     .contentType(MediaType.APPLICATION_JSON)
-                    .content(objectMapper.writeValueAsString(contact))
+                    .content(
+                        objectMapper.writeValueAsString(contact)
+                    )
         )
         .andExpect(status().isCreated())
         .andExpect(jsonPath("$.id").value(1))
