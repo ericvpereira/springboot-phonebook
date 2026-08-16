@@ -1,8 +1,5 @@
-CREATE TABLE tb_users (
-    id BIGSERIAL PRIMARY KEY,
-    username VARCHAR(100) NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL,
-    role VARCHAR(20) NOT NULL,
-    created_at TIMESTAMP,
-    updated_at TIMESTAMP
-);
+INSERT INTO tb_contacts
+(contact_name, phone_number, email, type)
+VALUES
+('João Silva', '11999999999', 'joao@email.com', 'FRIEND'),
+('Maria Souza', '11888888888', 'maria@email.com', 'WORK');
