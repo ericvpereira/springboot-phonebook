@@ -13,57 +13,53 @@ import com.eric.phonebook.repositories.ContactRepository;
 @Service
 public class ContactService {
 
-    private final ContactRepository repository;
+	private final ContactRepository repository;
 
-    public ContactService(ContactRepository repository) {
-        this.repository = repository;
-    }
+	public ContactService(ContactRepository repository) {
+		this.repository = repository;
+	}
 
-    @Transactional(readOnly = true)
-    public List<Contact> findAll() {
-        return repository.findAll();
-    }
+	@Transactional(readOnly = true)
+	public List<Contact> findAll() {
+		return repository.findAll();
+	}
 
-    @Transactional(readOnly = true)
-    public Contact findById(Long id) {
+	@Transactional(readOnly = true)
+	public Contact findById(Long id) {
 
-        return repository.findById(id)
-                .orElseThrow(() ->
-                    new ContactNotFoundException(
-                        "Contato não encontrado: " + id));
-    }
+		return repository.findById(id).orElseThrow(() -> new ContactNotFoundException("Contato não encontrado: " + id));
+	}
 
-    @Transactional
-    public Contact insert(Contact contact) {
-        return repository.save(contact);
-    }
+	@Transactional
+	public Contact insert(Contact contact) {
+		return repository.save(contact);
+	}
 
-    @Transactional
-    public Contact update(Long id, Contact contact) {
+	@Transactional
+	public Contact update(Long id, Contact contact) {
 
-        Contact entity = findById(id);
+		Contact entity = findById(id);
 
-        entity.setName(contact.getName());
-        entity.setPhone(contact.getPhone());
-        entity.setEmail(contact.getEmail());
-        entity.setType(contact.getType());
-        entity.setAddress(contact.getAddress());
+		entity.setName(contact.getName());
+		entity.setPhone(contact.getPhone());
+		entity.setEmail(contact.getEmail());
+		entity.setType(contact.getType());
+		entity.setAddress(contact.getAddress());
 
-        return repository.save(entity);
-    }
+		return repository.save(entity);
+	}
 
-    @Transactional
-    public void delete(Long id) {
+	@Transactional
+	public void delete(Long id) {
 
-        if (!repository.existsById(id)) {
-            throw new ContactNotFoundException(
-                "Contato não encontrado: " + id);
-        }
+		if (!repository.existsById(id)) {
+			throw new ContactNotFoundException("Contato não encontrado: " + id);
+		}
 
-        try {
-            repository.deleteById(id);
-        } catch (DataIntegrityViolationException e) {
-            throw e;
-        }
-    }
+		try {
+			repository.deleteById(id);
+		} catch (DataIntegrityViolationException e) {
+			throw e;
+		}
+	}
 }

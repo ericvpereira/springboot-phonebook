@@ -1,9 +1,9 @@
 package com.eric.phonebook.dto.auth;
 
 public class LoginResponse {
-	
+
 	private String token;
-	
+
 	public LoginResponse() {
 	}
 

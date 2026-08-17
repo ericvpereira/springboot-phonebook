@@ -16,58 +16,45 @@ import com.eric.phonebook.security.JwtService;
 @Service
 public class AuthService {
 
-    private final AuthenticationManager authenticationManager;
-    private final UserRepository userRepository;
-    private final PasswordEncoder passwordEncoder;
-    private final JwtService jwtService;
+	private final AuthenticationManager authenticationManager;
+	private final UserRepository userRepository;
+	private final PasswordEncoder passwordEncoder;
+	private final JwtService jwtService;
 
-    public AuthService(
-            AuthenticationManager authenticationManager,
-            UserRepository userRepository,
-            PasswordEncoder passwordEncoder,
-            JwtService jwtService) {
+	public AuthService(AuthenticationManager authenticationManager, UserRepository userRepository,
+			PasswordEncoder passwordEncoder, JwtService jwtService) {
 
-        this.authenticationManager = authenticationManager;
-        this.userRepository = userRepository;
-        this.passwordEncoder = passwordEncoder;
-        this.jwtService = jwtService;
-    }
+		this.authenticationManager = authenticationManager;
+		this.userRepository = userRepository;
+		this.passwordEncoder = passwordEncoder;
+		this.jwtService = jwtService;
+	}
 
-    public LoginResponse login(LoginRequest request) {
+	public LoginResponse login(LoginRequest request) {
 
-        authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(
-                request.getUsername(),
-                request.getPassword()
-            )
-        );
+		authenticationManager
+				.authenticate(new UsernamePasswordAuthenticationToken(request.getUsername(), request.getPassword()));
 
-        String token =
-                jwtService.generateToken(
-                    request.getUsername());
+		String token = jwtService.generateToken(request.getUsername());
 
-        return new LoginResponse(token);
-    }
+		return new LoginResponse(token);
+	}
 
-    public void register(RegisterRequest request) {
+	public void register(RegisterRequest request) {
 
-        if (userRepository
-                .existsByUsername(request.getUsername())) {
+		if (userRepository.existsByUsername(request.getUsername())) {
 
-            throw new RuntimeException(
-                "Usuário já existe");
-        }
+			throw new RuntimeException("Usuário já existe");
+		}
 
-        User user = new User();
+		User user = new User();
 
-        user.setUsername(request.getUsername());
+		user.setUsername(request.getUsername());
 
-        user.setPassword(
-            passwordEncoder.encode(
-                request.getPassword()));
+		user.setPassword(passwordEncoder.encode(request.getPassword()));
 
-        user.setRole(Role.USER);
+		user.setRole(Role.USER);
 
-        userRepository.save(user);
-    }
+		userRepository.save(user);
+	}
 }

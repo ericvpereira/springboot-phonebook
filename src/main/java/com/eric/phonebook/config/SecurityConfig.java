@@ -20,64 +20,52 @@ import com.eric.phonebook.security.JwtAuthenticationFilter;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
-	
+
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-	
+
 	private final UserDetailsService userDetailsService;
 
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService) {
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 		this.userDetailsService = userDetailsService;
 	}
-	
+
 	@Bean
-	public SecurityFilterChain securityFilterChain(
-			HttpSecurity http) throws Exception {
-		
-		http
-		.csrf(csrf -> csrf.disable())
-		
-		.sessionManagement(session -> 
-				session.sessionCreationPolicy(
-						SessionCreationPolicy.STATELESS
-				)
-			)
-			
-			.authenticationProvider(authenticationProvider())
-			
-			.addFilterBefore(
-					jwtAuthenticationFilter,
-					UsernamePasswordAuthenticationFilter.class
-			);
-		
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+
+		http.csrf(csrf -> csrf.disable())
+
+				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				.authenticationProvider(authenticationProvider())
+
+				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+
 		return http.build();
 	}
-	
+
 	@Bean
 	public AuthenticationProvider authenticationProvider() {
-		
-		DaoAuthenticationProvider provider =
-				new DaoAuthenticationProvider();
-		
+
+		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
+
 		provider.setUserDetailsService(userDetailsService);
-		
+
 		provider.setPasswordEncoder(passwordEncoder());
-		
+
 		return provider;
 	}
-	
+
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-		
+
 		return new BCryptPasswordEncoder();
 	}
-	
+
 	@Bean
 	public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception {
-		
+
 		return configuration.getAuthenticationManager();
 	}
-	
-	
 
 }

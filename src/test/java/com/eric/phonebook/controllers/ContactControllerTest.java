@@ -36,144 +36,90 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 @ActiveProfiles("test")
 class ContactControllerTest {
 
-    @Autowired
-    private MockMvc mockMvc;
+	@Autowired
+	private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
+	@Autowired
+	private ObjectMapper objectMapper;
 
-    @MockBean
-    private ContactService service;
+	@MockBean
+	private ContactService service;
 
-    @MockBean
-    private JwtService jwtService;
+	@MockBean
+	private JwtService jwtService;
 
-    @MockBean
-    private CustomUserDetailsService customUserDetailsService;
+	@MockBean
+	private CustomUserDetailsService customUserDetailsService;
 
-    private Contact contact;
+	private Contact contact;
 
-    @BeforeEach
-    void setUp() {
+	@BeforeEach
+	void setUp() {
 
-        contact = new Contact(
-                "Eric",
-                "11999999999",
-                "eric@email.com",
-                ContactType.FRIEND
-        );
+		contact = new Contact("Eric", "11999999999", "eric@email.com", ContactType.FRIEND);
 
-        contact.setId(1L);
-    }
+		contact.setId(1L);
+	}
 
-    @Test
-    void shouldFindAllContacts() throws Exception {
+	@Test
+	void shouldFindAllContacts() throws Exception {
 
-        when(service.findAll())
-                .thenReturn(Arrays.asList(contact));
+		when(service.findAll()).thenReturn(Arrays.asList(contact));
 
-        mockMvc.perform(
-                get("/contacts")
-        )
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$[0].id").value(1))
-        .andExpect(jsonPath("$[0].name").value("Eric"))
-        .andExpect(jsonPath("$[0].phone")
-                .value("11999999999"))
-        .andExpect(jsonPath("$[0].email")
-                .value("eric@email.com"));
+		mockMvc.perform(get("/contacts")).andExpect(status().isOk()).andExpect(jsonPath("$[0].id").value(1))
+				.andExpect(jsonPath("$[0].name").value("Eric")).andExpect(jsonPath("$[0].phone").value("11999999999"))
+				.andExpect(jsonPath("$[0].email").value("eric@email.com"));
 
-        verify(service).findAll();
-    }
+		verify(service).findAll();
+	}
 
-    @Test
-    void shouldFindContactById() throws Exception {
+	@Test
+	void shouldFindContactById() throws Exception {
 
-        when(service.findById(1L))
-                .thenReturn(contact);
+		when(service.findById(1L)).thenReturn(contact);
 
-        mockMvc.perform(
-                get("/contacts/1")
-        )
-        .andExpect(status().isOk())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.name").value("Eric"));
+		mockMvc.perform(get("/contacts/1")).andExpect(status().isOk()).andExpect(jsonPath("$.id").value(1))
+				.andExpect(jsonPath("$.name").value("Eric"));
 
-        verify(service).findById(1L);
-    }
+		verify(service).findById(1L);
+	}
 
-    @Test
-    void shouldCreateContact() throws Exception {
+	@Test
+	void shouldCreateContact() throws Exception {
 
-        when(service.insert(any(Contact.class)))
-                .thenReturn(contact);
+		when(service.insert(any(Contact.class))).thenReturn(contact);
 
-        mockMvc.perform(
-                post("/contacts")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        objectMapper.writeValueAsString(contact)
-                    )
-        )
-        .andExpect(status().isCreated())
-        .andExpect(jsonPath("$.id").value(1))
-        .andExpect(jsonPath("$.name").value("Eric"));
+		mockMvc.perform(post("/contacts").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(contact))).andExpect(status().isCreated())
+				.andExpect(jsonPath("$.id").value(1)).andExpect(jsonPath("$.name").value("Eric"));
 
-        verify(service).insert(any(Contact.class));
-    }
+		verify(service).insert(any(Contact.class));
+	}
 
-    @Test
-    void shouldUpdateContact() throws Exception {
+	@Test
+	void shouldUpdateContact() throws Exception {
 
-        Contact updatedContact = new Contact(
-                "Eric Pereira",
-                "11888888888",
-                "ericpereira@email.com",
-                ContactType.WORK
-        );
+		Contact updatedContact = new Contact("Eric Pereira", "11888888888", "ericpereira@email.com", ContactType.WORK);
 
-        updatedContact.setId(1L);
+		updatedContact.setId(1L);
 
-        when(service.update(
-                eq(1L),
-                any(Contact.class)
-        )).thenReturn(updatedContact);
+		when(service.update(eq(1L), any(Contact.class))).thenReturn(updatedContact);
 
-        mockMvc.perform(
-                put("/contacts/1")
-                    .contentType(MediaType.APPLICATION_JSON)
-                    .content(
-                        objectMapper.writeValueAsString(
-                            updatedContact
-                        )
-                    )
-        )
-        .andExpect(status().isOk())
-        .andExpect(
-            jsonPath("$.name")
-                .value("Eric Pereira")
-        )
-        .andExpect(
-            jsonPath("$.phone")
-                .value("11888888888")
-        );
+		mockMvc.perform(put("/contacts/1").contentType(MediaType.APPLICATION_JSON)
+				.content(objectMapper.writeValueAsString(updatedContact))).andExpect(status().isOk())
+				.andExpect(jsonPath("$.name").value("Eric Pereira"))
+				.andExpect(jsonPath("$.phone").value("11888888888"));
 
-        verify(service)
-                .update(eq(1L), any(Contact.class));
-    }
+		verify(service).update(eq(1L), any(Contact.class));
+	}
 
-    @Test
-    void shouldDeleteContact() throws Exception {
+	@Test
+	void shouldDeleteContact() throws Exception {
 
-        doNothing()
-                .when(service)
-                .delete(1L);
+		doNothing().when(service).delete(1L);
 
-        mockMvc.perform(
-                delete("/contacts/1")
-        )
-        .andExpect(status().isNoContent());
+		mockMvc.perform(delete("/contacts/1")).andExpect(status().isNoContent());
 
-        verify(service).delete(1L);
-    }
+		verify(service).delete(1L);
+	}
 }

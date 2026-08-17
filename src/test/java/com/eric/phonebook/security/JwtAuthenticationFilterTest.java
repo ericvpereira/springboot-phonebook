@@ -20,204 +20,122 @@ import org.springframework.security.core.userdetails.UserDetails;
 @ExtendWith(MockitoExtension.class)
 class JwtAuthenticationFilterTest {
 
-    @Mock
-    private JwtService jwtService;
+	@Mock
+	private JwtService jwtService;
 
-    @Mock
-    private CustomUserDetailsService userDetailsService;
+	@Mock
+	private CustomUserDetailsService userDetailsService;
 
-    private JwtAuthenticationFilter filter;
+	private JwtAuthenticationFilter filter;
 
-    @BeforeEach
-    void setUp() {
-        filter = new JwtAuthenticationFilter(
-                jwtService,
-                userDetailsService
-        );
+	@BeforeEach
+	void setUp() {
+		filter = new JwtAuthenticationFilter(jwtService, userDetailsService);
 
-        SecurityContextHolder.clearContext();
-    }
+		SecurityContextHolder.clearContext();
+	}
 
-    @Test
-    void shouldAuthenticateUserWithValidToken()
-            throws Exception {
+	@Test
+	void shouldAuthenticateUserWithValidToken() throws Exception {
 
-        String token = "token-valido";
-        String username = "Eric";
+		String token = "token-valido";
+		String username = "Eric";
 
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User
-                        .withUsername(username)
-                        .password("123456")
-                        .roles("USER")
-                        .build();
+		UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(username)
+				.password("123456").roles("USER").build();
 
-        when(jwtService.extractUsername(token))
-                .thenReturn(username);
+		when(jwtService.extractUsername(token)).thenReturn(username);
 
-        when(userDetailsService.loadUserByUsername(username))
-                .thenReturn(userDetails);
+		when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
 
-        when(jwtService.isTokenValid(token, username))
-                .thenReturn(true);
+		when(jwtService.isTokenValid(token, username)).thenReturn(true);
 
-        MockHttpServletRequest request =
-                new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-        request.addHeader(
-                "Authorization",
-                "Bearer " + token
-        );
+		request.addHeader("Authorization", "Bearer " + token);
 
-        MockHttpServletResponse response =
-                new MockHttpServletResponse();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        MockFilterChain filterChain =
-                new MockFilterChain();
+		MockFilterChain filterChain = new MockFilterChain();
 
-        filter.doFilter(
-                request,
-                response,
-                filterChain
-        );
+		filter.doFilter(request, response, filterChain);
 
-        Authentication authentication =
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication();
+		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        assertTrue(authentication.isAuthenticated());
+		assertTrue(authentication.isAuthenticated());
 
-        assertEquals(
-                username,
-                authentication.getName()
-        );
+		assertEquals(username, authentication.getName());
 
-        verify(jwtService)
-                .extractUsername(token);
+		verify(jwtService).extractUsername(token);
 
-        verify(userDetailsService)
-                .loadUserByUsername(username);
+		verify(userDetailsService).loadUserByUsername(username);
 
-        verify(jwtService)
-                .isTokenValid(token, username);
-    }
+		verify(jwtService).isTokenValid(token, username);
+	}
 
-    @Test
-    void shouldContinueWithoutToken()
-            throws Exception {
+	@Test
+	void shouldContinueWithoutToken() throws Exception {
 
-        MockHttpServletRequest request =
-                new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-        MockHttpServletResponse response =
-                new MockHttpServletResponse();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        MockFilterChain filterChain =
-                new MockFilterChain();
+		MockFilterChain filterChain = new MockFilterChain();
 
-        filter.doFilter(
-                request,
-                response,
-                filterChain
-        );
+		filter.doFilter(request, response, filterChain);
 
-        assertTrue(
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication() == null
-        );
-    }
+		assertTrue(SecurityContextHolder.getContext().getAuthentication() == null);
+	}
 
-    @Test
-    void shouldContinueWithInvalidToken()
-            throws Exception {
+	@Test
+	void shouldContinueWithInvalidToken() throws Exception {
 
-        String token = "token-invalido";
+		String token = "token-invalido";
 
-        when(jwtService.extractUsername(token))
-                .thenThrow(new RuntimeException());
+		when(jwtService.extractUsername(token)).thenThrow(new RuntimeException());
 
-        MockHttpServletRequest request =
-                new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-        request.addHeader(
-                "Authorization",
-                "Bearer " + token
-        );
+		request.addHeader("Authorization", "Bearer " + token);
 
-        MockHttpServletResponse response =
-                new MockHttpServletResponse();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        MockFilterChain filterChain =
-                new MockFilterChain();
+		MockFilterChain filterChain = new MockFilterChain();
 
-        filter.doFilter(
-                request,
-                response,
-                filterChain
-        );
+		filter.doFilter(request, response, filterChain);
 
-        assertTrue(
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication() == null
-        );
+		assertTrue(SecurityContextHolder.getContext().getAuthentication() == null);
 
-        verify(jwtService)
-                .extractUsername(token);
-    }
+		verify(jwtService).extractUsername(token);
+	}
 
-    @Test
-    void shouldNotAuthenticateWithInvalidToken()
-            throws Exception {
+	@Test
+	void shouldNotAuthenticateWithInvalidToken() throws Exception {
 
-        String token = "token-expirado";
-        String username = "Eric";
+		String token = "token-expirado";
+		String username = "Eric";
 
-        UserDetails userDetails =
-                org.springframework.security.core.userdetails.User
-                        .withUsername(username)
-                        .password("123456")
-                        .roles("USER")
-                        .build();
+		UserDetails userDetails = org.springframework.security.core.userdetails.User.withUsername(username)
+				.password("123456").roles("USER").build();
 
-        when(jwtService.extractUsername(token))
-                .thenReturn(username);
+		when(jwtService.extractUsername(token)).thenReturn(username);
 
-        when(userDetailsService.loadUserByUsername(username))
-                .thenReturn(userDetails);
+		when(userDetailsService.loadUserByUsername(username)).thenReturn(userDetails);
 
-        when(jwtService.isTokenValid(token, username))
-                .thenReturn(false);
+		when(jwtService.isTokenValid(token, username)).thenReturn(false);
 
-        MockHttpServletRequest request =
-                new MockHttpServletRequest();
+		MockHttpServletRequest request = new MockHttpServletRequest();
 
-        request.addHeader(
-                "Authorization",
-                "Bearer " + token
-        );
+		request.addHeader("Authorization", "Bearer " + token);
 
-        MockHttpServletResponse response =
-                new MockHttpServletResponse();
+		MockHttpServletResponse response = new MockHttpServletResponse();
 
-        MockFilterChain filterChain =
-                new MockFilterChain();
+		MockFilterChain filterChain = new MockFilterChain();
 
-        filter.doFilter(
-                request,
-                response,
-                filterChain
-        );
+		filter.doFilter(request, response, filterChain);
 
-        assertTrue(
-                SecurityContextHolder
-                        .getContext()
-                        .getAuthentication() == null
-        );
+		assertTrue(SecurityContextHolder.getContext().getAuthentication() == null);
 
-        verify(jwtService)
-                .isTokenValid(token, username);
-    }
+		verify(jwtService).isTokenValid(token, username);
+	}
 }

@@ -22,52 +22,44 @@ import jakarta.validation.Valid;
 @RequestMapping("/contacts")
 public class ContactController {
 
-    private final ContactService service;
+	private final ContactService service;
 
-    public ContactController(ContactService service) {
-        this.service = service;
-    }
+	public ContactController(ContactService service) {
+		this.service = service;
+	}
 
-    @GetMapping
-    public ResponseEntity<List<Contact>> findAll() {
-        return ResponseEntity.ok(service.findAll());
-    }
+	@GetMapping
+	public ResponseEntity<List<Contact>> findAll() {
+		return ResponseEntity.ok(service.findAll());
+	}
 
-    @GetMapping("/{id}")
-    public ResponseEntity<Contact> findById(
-            @PathVariable Long id) {
+	@GetMapping("/{id}")
+	public ResponseEntity<Contact> findById(@PathVariable Long id) {
 
-        return ResponseEntity.ok(service.findById(id));
-    }
+		return ResponseEntity.ok(service.findById(id));
+	}
 
-    @PostMapping
-    public ResponseEntity<Contact> insert(
-            @Valid @RequestBody Contact contact) {
+	@PostMapping
+	public ResponseEntity<Contact> insert(@Valid @RequestBody Contact contact) {
 
-        Contact saved = service.insert(contact);
+		Contact saved = service.insert(contact);
 
-        URI uri = URI.create("/contacts/" + saved.getId());
+		URI uri = URI.create("/contacts/" + saved.getId());
 
-        return ResponseEntity
-                .created(uri)
-                .body(saved);
-    }
+		return ResponseEntity.created(uri).body(saved);
+	}
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Contact> update(
-            @PathVariable Long id,
-            @Valid @RequestBody Contact contact) {
+	@PutMapping("/{id}")
+	public ResponseEntity<Contact> update(@PathVariable Long id, @Valid @RequestBody Contact contact) {
 
-        return ResponseEntity.ok(
-            service.update(id, contact));
-    }
+		return ResponseEntity.ok(service.update(id, contact));
+	}
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(
-            @PathVariable Long id) {
+	@DeleteMapping("/{id}")
+	public ResponseEntity<Void> delete(@PathVariable Long id) {
 
-        service.delete(id);
+		service.delete(id);
 
-        return ResponseEntity.noContent().build();
-    }
+		return ResponseEntity.noContent().build();
+	}
 }

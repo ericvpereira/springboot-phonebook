@@ -7,69 +7,54 @@ import org.junit.jupiter.api.Test;
 
 class JwtServiceTest {
 
-    private JwtService jwtService;
+	private JwtService jwtService;
 
-    private final String secret =
-            "minha-chave-secreta-super-segura-com-mais-de-32-caracteres";
+	private final String secret = "minha-chave-secreta-super-segura-com-mais-de-32-caracteres";
 
-    private final long expiration = 3600000;
+	private final long expiration = 3600000;
 
-    @BeforeEach
-    void setUp() {
+	@BeforeEach
+	void setUp() {
 
-        jwtService = new JwtService(
-                secret,
-                expiration
-        );
-    }
+		jwtService = new JwtService(secret, expiration);
+	}
 
-    @Test
-    void shouldGenerateToken() {
+	@Test
+	void shouldGenerateToken() {
 
-        String token = jwtService.generateToken("Eric");
+		String token = jwtService.generateToken("Eric");
 
-        assertNotNull(token);
-        assertFalse(token.isBlank());
-    }
+		assertNotNull(token);
+		assertFalse(token.isBlank());
+	}
 
-    @Test
-    void shouldExtractUsernameFromToken() {
+	@Test
+	void shouldExtractUsernameFromToken() {
 
-        String token = jwtService.generateToken("Eric");
+		String token = jwtService.generateToken("Eric");
 
-        String username =
-                jwtService.extractUsername(token);
+		String username = jwtService.extractUsername(token);
 
-        assertEquals("Eric", username);
-    }
+		assertEquals("Eric", username);
+	}
 
-    @Test
-    void shouldValidateValidToken() {
+	@Test
+	void shouldValidateValidToken() {
 
-        String token =
-                jwtService.generateToken("Eric");
+		String token = jwtService.generateToken("Eric");
 
-        boolean valid =
-                jwtService.isTokenValid(
-                        token,
-                        "Eric"
-                );
+		boolean valid = jwtService.isTokenValid(token, "Eric");
 
-        assertTrue(valid);
-    }
+		assertTrue(valid);
+	}
 
-    @Test
-    void shouldRejectTokenWithDifferentUsername() {
+	@Test
+	void shouldRejectTokenWithDifferentUsername() {
 
-        String token =
-                jwtService.generateToken("Eric");
+		String token = jwtService.generateToken("Eric");
 
-        boolean valid =
-                jwtService.isTokenValid(
-                        token,
-                        "Joao"
-                );
+		boolean valid = jwtService.isTokenValid(token, "Joao");
 
-        assertFalse(valid);
-    }
+		assertFalse(valid);
+	}
 }
