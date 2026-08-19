@@ -40,7 +40,8 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/login", "auth/register").permitAll()
-						.requestMatchers("/contacts/**").authenticated().anyRequest().authenticated())
+						.requestMatchers("/users/**").hasRole("ADMIN").requestMatchers("/contacts/**").authenticated()
+						.anyRequest().authenticated())
 
 				.authenticationProvider(authenticationProvider())
 
