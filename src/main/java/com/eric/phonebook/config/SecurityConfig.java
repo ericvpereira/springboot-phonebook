@@ -18,16 +18,18 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import com.eric.phonebook.security.JwtAuthenticationFilter;
 
+import jakarta.servlet.http.HttpServletResponse;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
 public class SecurityConfig {
 
 	private final JwtAuthenticationFilter jwtAuthenticationFilter;
-
 	private final UserDetailsService userDetailsService;
 
 	public SecurityConfig(JwtAuthenticationFilter jwtAuthenticationFilter, UserDetailsService userDetailsService) {
+
 		this.jwtAuthenticationFilter = jwtAuthenticationFilter;
 		this.userDetailsService = userDetailsService;
 	}
@@ -38,6 +40,9 @@ public class SecurityConfig {
 		http.csrf(csrf -> csrf.disable())
 
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+
+				.exceptionHandling(exception -> exception.authenticationEntryPoint(
+						(request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
 
 				.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/login", "/auth/register").permitAll()
 						.requestMatchers("/users/**").hasRole("ADMIN").requestMatchers("/contacts/**").authenticated()
@@ -56,7 +61,6 @@ public class SecurityConfig {
 		DaoAuthenticationProvider provider = new DaoAuthenticationProvider();
 
 		provider.setUserDetailsService(userDetailsService);
-
 		provider.setPasswordEncoder(passwordEncoder());
 
 		return provider;
@@ -64,7 +68,6 @@ public class SecurityConfig {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
-
 		return new BCryptPasswordEncoder();
 	}
 
@@ -73,5 +76,4 @@ public class SecurityConfig {
 
 		return configuration.getAuthenticationManager();
 	}
-
 }
