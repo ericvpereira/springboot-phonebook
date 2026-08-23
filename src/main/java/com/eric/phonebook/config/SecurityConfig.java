@@ -44,9 +44,11 @@ public class SecurityConfig {
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(
 						(request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
 
-				.authorizeHttpRequests(auth -> auth.requestMatchers("/auth/login", "/auth/register").permitAll()
-						.requestMatchers("/users/**").hasRole("ADMIN").requestMatchers("/contacts/**").authenticated()
-						.anyRequest().authenticated())
+				.authorizeHttpRequests(auth -> auth
+						.requestMatchers("/auth/login", "/auth/register", "/swagger-ui/**", "/swagger-ui.html",
+								"/v3/api-docs/**")
+						.permitAll().requestMatchers("/users/**").hasRole("ADMIN").requestMatchers("/contacts/**")
+						.authenticated().anyRequest().authenticated())
 
 				.authenticationProvider(authenticationProvider())
 

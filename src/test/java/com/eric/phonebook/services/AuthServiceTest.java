@@ -2,6 +2,7 @@ package com.eric.phonebook.services;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 
 import com.eric.phonebook.dto.auth.LoginRequest;
 import com.eric.phonebook.dto.auth.LoginResponse;
+import com.eric.phonebook.entities.User;
 import com.eric.phonebook.repositories.UserRepository;
 import com.eric.phonebook.security.JwtService;
 
