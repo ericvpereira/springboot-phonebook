@@ -42,7 +42,9 @@ public class SecurityConfig {
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
 				.exceptionHandling(exception -> exception.authenticationEntryPoint(
-						(request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED)))
+						(request, response, authException) -> response.sendError(HttpServletResponse.SC_UNAUTHORIZED))
+						.accessDeniedHandler((request, response, accessDeniedException) -> response
+								.sendError(HttpServletResponse.SC_FORBIDDEN)))
 
 				.authorizeHttpRequests(auth -> auth
 						.requestMatchers("/auth/login", "/auth/register", "/swagger-ui/**", "/swagger-ui.html",

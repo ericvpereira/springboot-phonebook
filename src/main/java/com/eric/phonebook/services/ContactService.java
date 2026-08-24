@@ -2,7 +2,6 @@ package com.eric.phonebook.services;
 
 import java.util.List;
 
-import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,10 +55,6 @@ public class ContactService {
 			throw new ContactNotFoundException("Contato não encontrado: " + id);
 		}
 
-		try {
-			repository.deleteById(id);
-		} catch (DataIntegrityViolationException e) {
-			throw e;
-		}
+		repository.deleteById(id);
 	}
 }
