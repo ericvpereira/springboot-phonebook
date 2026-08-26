@@ -72,6 +72,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			}
 		}
 
+		System.out.println("===============================");
+		System.out.println("ANTES DO FILTER CHAIN");
+		System.out.println("AUTH: " + SecurityContextHolder.getContext().getAuthentication());
+		System.out.println("AUTHENTICATED: " + (SecurityContextHolder.getContext().getAuthentication() != null
+				&& SecurityContextHolder.getContext().getAuthentication().isAuthenticated()));
+		System.out.println("===============================");
+
 		filterChain.doFilter(request, response);
 	}
 }
