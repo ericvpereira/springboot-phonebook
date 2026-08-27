@@ -10,6 +10,7 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -37,30 +38,67 @@ public class SecurityConfig {
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
 
-		http.csrf(csrf -> csrf.disable())
+		http
+				// Desabilita CSRF porque a API utiliza JWT
+				.csrf(csrf -> csrf.disable())
 
+				// API REST sem sessão
 				.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 
-				.exceptionHandling(
-						exception -> exception.authenticationEntryPoint((request, response, authException) -> {
+				// Tratamento de autenticação e autorização
+				.exceptionHandling(exception -> exception
+
+						// 401 - usuário não autenticado
+						.authenticationEntryPoint((request, response, authException) -> {
+
+							System.out.println("================================");
+							System.out.println(">>> AUTHENTICATION ERROR");
+							System.out.println("URI: " + request.getRequestURI());
+							System.out.println("ERRO: " + authException.getMessage());
+							System.out.println("================================");
+
 							response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
-						}).accessDeniedHandler((request, response, accessDeniedException) -> {
+						})
+
+						// 403 - usuário autenticado, mas sem permissão
+						.accessDeniedHandler((request, response, accessDeniedException) -> {
+
+							System.out.println("================================");
+							System.out.println(">>> ACCESS DENIED HANDLER");
+							System.out.println("URI: " + request.getRequestURI());
+
+							System.out.println("USUARIO: " + SecurityContextHolder.getContext().getAuthentication());
+
+							System.out.println("EXCEPTION: " + accessDeniedException.getClass().getName());
+
+							System.out.println("MENSAGEM: " + accessDeniedException.getMessage());
+
+							System.out.println("================================");
+
 							response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						}))
 
+				// Regras de acesso
 				.authorizeHttpRequests(auth -> auth
+
+						// Endpoints públicos
 						.requestMatchers("/auth/login", "/auth/register", "/swagger-ui/**", "/swagger-ui.html",
-								"/v3/api-docs/**")
+								"/v3/api-docs/**", "/error")
 						.permitAll()
 
+						// Somente ADMIN
 						.requestMatchers("/users/**").hasRole("ADMIN")
 
+						// Qualquer usuário autenticado
 						.requestMatchers("/contacts/**").authenticated()
 
+						// Todo o restante exige autenticação
 						.anyRequest().authenticated())
 
+				// Provider responsável pela autenticação
 				.authenticationProvider(authenticationProvider())
 
+				// JWT antes do filtro padrão do Spring Security
 				.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
 		return http.build();
@@ -79,6 +117,7 @@ public class SecurityConfig {
 
 	@Bean
 	public PasswordEncoder passwordEncoder() {
+
 		return new BCryptPasswordEncoder();
 	}
 
