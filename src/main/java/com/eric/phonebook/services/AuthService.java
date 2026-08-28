@@ -10,6 +10,7 @@ import com.eric.phonebook.dto.auth.LoginResponse;
 import com.eric.phonebook.dto.auth.RegisterRequest;
 import com.eric.phonebook.entities.User;
 import com.eric.phonebook.enums.Role;
+import com.eric.phonebook.exceptions.UserAlreadyExistsException;
 import com.eric.phonebook.repositories.UserRepository;
 import com.eric.phonebook.security.JwtService;
 
@@ -44,7 +45,7 @@ public class AuthService {
 
 		if (userRepository.existsByUsername(request.getUsername())) {
 
-			throw new RuntimeException("Usuário já existe");
+			throw new UserAlreadyExistsException("Usuário já existe");
 		}
 
 		User user = new User();
