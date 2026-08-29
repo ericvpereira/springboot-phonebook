@@ -1,196 +1,354 @@
 # 📱 Phonebook API
 
-> API REST para gerenciamento de contatos, desenvolvida com **Java e Spring Boot**, com autenticação e autorização utilizando **Spring Security + JWT**, persistência em **PostgreSQL**, controle de versões do banco com **Flyway** e execução containerizada com **Docker**.
+> **API REST para gerenciamento de contatos, desenvolvida com Java e Spring Boot, com autenticação JWT, autorização por perfil, PostgreSQL, Flyway e Docker.**
+
+![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge\&logo=openjdk)
+![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-6DB33F?style=for-the-badge\&logo=springboot)
+![Spring Security](https://img.shields.io/badge/Spring%20Security-JWT-6DB33F?style=for-the-badge\&logo=springsecurity)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-336791?style=for-the-badge\&logo=postgresql)
+![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?style=for-the-badge\&logo=docker)
+![Maven](https://img.shields.io/badge/Maven-Build-C71A36?style=for-the-badge\&logo=apachemaven)
 
 ---
 
-## 🚀 Sobre o projeto
+## 📋 Sobre o projeto
 
 O **Phonebook API** é uma aplicação backend desenvolvida para praticar e demonstrar conceitos fundamentais do desenvolvimento de APIs REST com Java e Spring Boot.
 
-A aplicação permite o gerenciamento de contatos e usuários, utilizando autenticação baseada em JWT e controle de acesso por perfil.
+A aplicação permite o gerenciamento de contatos e usuários, utilizando autenticação baseada em **JWT (JSON Web Token)** e autorização baseada em roles.
 
-O projeto foi desenvolvido com foco em boas práticas de organização, separação de responsabilidades, validação de dados, tratamento de exceções, persistência de dados e testes automatizados.
+O projeto foi desenvolvido com foco em:
 
-### 🎯 Objetivos
-
-* Desenvolver uma API REST utilizando Spring Boot;
-* Aplicar arquitetura em camadas;
-* Trabalhar com Spring Data JPA e Hibernate;
-* Implementar autenticação utilizando JWT;
-* Implementar autorização baseada em roles;
-* Utilizar PostgreSQL como banco de dados;
-* Gerenciar migrations utilizando Flyway;
-* Criar testes automatizados;
-* Documentar a API com Swagger/OpenAPI;
-* Containerizar a aplicação utilizando Docker.
+* arquitetura em camadas;
+* boas práticas de desenvolvimento backend;
+* segurança de APIs REST;
+* persistência de dados;
+* versionamento de banco de dados;
+* tratamento global de exceções;
+* testes automatizados;
+* containerização com Docker.
 
 ---
 
-# 🛠️ Tecnologias utilizadas
+## 🚀 Funcionalidades
 
-### Backend
+### 🔐 Autenticação e autorização
 
-![Java](https://img.shields.io/badge/Java-17-orange?style=for-the-badge\&logo=openjdk)
-![Spring Boot](https://img.shields.io/badge/Spring%20Boot-3.5.3-brightgreen?style=for-the-badge\&logo=springboot)
-![Spring Security](https://img.shields.io/badge/Spring%20Security-6.x-brightgreen?style=for-the-badge\&logo=springsecurity)
-![Hibernate](https://img.shields.io/badge/Hibernate-ORM-blue?style=for-the-badge\&logo=hibernate)
+* Cadastro de usuários
+* Login com usuário e senha
+* Geração de token JWT
+* Validação de JWT
+* Senhas armazenadas utilizando BCrypt
+* Autorização baseada em roles
+* Perfil `USER`
+* Perfil `ADMIN`
+* Proteção dos endpoints da API
+* Retorno `401 Unauthorized` para usuários não autenticados
+* Retorno `403 Forbidden` para usuários sem permissão
 
-### Banco de dados
+### 📇 Contatos
 
-![PostgreSQL](https://img.shields.io/badge/PostgreSQL-17-blue?style=for-the-badge\&logo=postgresql)
-![Flyway](https://img.shields.io/badge/Flyway-Database%20Migration-red?style=for-the-badge)
+* Criar contato
+* Buscar contato por ID
+* Listar contatos
+* Atualizar contato
+* Excluir contato
+* Busca por nome
+* Busca por e-mail
+* Associação de endereço
+* Validação dos dados recebidos
 
-### Segurança
+### 🛡️ Tratamento de exceções
 
-![JWT](https://img.shields.io/badge/JWT-Authentication-black?style=for-the-badge\&logo=jsonwebtokens)
+A aplicação possui tratamento global de exceções para retornar respostas HTTP padronizadas.
 
-### Testes
-
-![JUnit](https://img.shields.io/badge/JUnit-5-green?style=for-the-badge\&logo=junit5)
-![Mockito](https://img.shields.io/badge/Mockito-Testes-yellow?style=for-the-badge)
-
-### Documentação e infraestrutura
-
-![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-85EA2D?style=for-the-badge\&logo=swagger)
-![Docker](https://img.shields.io/badge/Docker-Container-blue?style=for-the-badge\&logo=docker)
-![Maven](https://img.shields.io/badge/Maven-Build-red?style=for-the-badge\&logo=apachemaven)
-![Git](https://img.shields.io/badge/Git-Version%20Control-orange?style=for-the-badge\&logo=git)
-
----
-
-# 🏗️ Arquitetura
-
-O projeto utiliza uma arquitetura organizada em camadas, separando responsabilidades entre controllers, services, repositories, entidades e componentes de segurança.
+Exemplos:
 
 ```text
-src/main/java/com/eric/phonebook
-│
-├── config
-│   ├── DataInitializer.java
-│   ├── OpenApiConfig.java
-│   └── SecurityConfig.java
-│
-├── controllers
-│   ├── AuthController.java
-│   ├── ContactController.java
-│   └── UserController.java
-│
-├── dto
-│   └── auth
-│       ├── LoginRequest.java
-│       ├── LoginResponse.java
-│       └── RegisterRequest.java
-│
-├── entities
-│   ├── Address.java
-│   ├── BaseEntity.java
-│   ├── Contact.java
-│   └── User.java
-│
-├── enums
-│   ├── ContactType.java
-│   └── Role.java
-│
-├── exceptions
-│   ├── ContactNotFoundException.java
-│   ├── DatabaseException.java
-│   ├── UserAlreadyExistsException.java
-│   └── handlers
-│       ├── GlobalExceptionHandler.java
-│       └── StandardError.java
-│
-├── repositories
-│   ├── ContactRepository.java
-│   └── UserRepository.java
-│
-├── security
-│   ├── CustomUserDetailsService.java
-│   ├── JwtAuthenticationFilter.java
-│   └── JwtService.java
-│
-└── services
-    ├── AuthService.java
-    └── ContactService.java
+400 Bad Request
+401 Unauthorized
+403 Forbidden
+404 Not Found
+409 Conflict
 ```
 
 ---
 
-# 🔐 Segurança
+## 🏗️ Arquitetura
+
+O projeto utiliza uma arquitetura organizada em camadas:
+
+```text
+src
+└── main
+    └── java
+        └── com.eric.phonebook
+            ├── config
+            ├── controllers
+            ├── dto
+            ├── entities
+            ├── enums
+            ├── exceptions
+            ├── repositories
+            ├── security
+            └── services
+```
+
+### Principais responsabilidades
+
+| Camada         | Responsabilidade                     |
+| -------------- | ------------------------------------ |
+| `controllers`  | Receber e responder requisições HTTP |
+| `services`     | Regras de negócio                    |
+| `repositories` | Acesso aos dados                     |
+| `entities`     | Entidades JPA                        |
+| `dto`          | Transferência de dados               |
+| `security`     | Autenticação e JWT                   |
+| `exceptions`   | Tratamento de exceções               |
+| `config`       | Configurações da aplicação           |
+
+---
+
+## 🔑 Segurança
 
 A API utiliza **Spring Security + JWT** para autenticação e autorização.
 
-O fluxo de autenticação funciona da seguinte maneira:
+Fluxo simplificado:
 
 ```text
-                    ┌──────────────┐
-                    │    Cliente   │
-                    └──────┬───────┘
-                           │
-                           │ POST /auth/login
-                           ▼
-                    ┌──────────────┐
-                    │ AuthService  │
-                    └──────┬───────┘
-                           │
-                           ▼
-                 AuthenticationManager
-                           │
-                           ▼
-                CustomUserDetailsService
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │  PostgreSQL  │
-                    └──────────────┘
-                           │
-                           ▼
-                    Credenciais OK
-                           │
-                           ▼
-                      JwtService
-                           │
-                           ▼
-                     JWT Token
-                           │
-                           ▼
-                    ┌──────────────┐
-                    │    Cliente   │
-                    └──────┬───────┘
-                           │
-                     Authorization:
-                     Bearer <token>
-                           │
-                           ▼
-                JwtAuthenticationFilter
-                           │
-                           ▼
-                    Endpoint protegido
+Cliente
+   │
+   │ POST /auth/login
+   ▼
+AuthController
+   │
+   ▼
+AuthService
+   │
+   ▼
+AuthenticationManager
+   │
+   ▼
+UserDetailsService
+   │
+   ▼
+PostgreSQL
+   │
+   ▼
+JWT Token
 ```
 
-## 👤 Roles
+Depois do login:
 
-A aplicação possui dois níveis de acesso:
+```text
+Authorization: Bearer <JWT>
+```
 
-### USER
+O token é interceptado pelo:
 
-Usuários comuns podem acessar os endpoints protegidos de contatos.
+```text
+JwtAuthenticationFilter
+```
 
-### ADMIN
-
-Administradores possuem permissões adicionais, incluindo acesso aos endpoints de usuários.
-
-As regras são configuradas através do Spring Security.
+que valida o token e estabelece a autenticação do usuário.
 
 ---
 
-# 🔑 Autenticação
+## 👥 Controle de acesso
 
-## Registrar usuário
+A aplicação possui dois perfis:
+
+```text
+USER
+ADMIN
+```
+
+Exemplo de autorização:
+
+```text
+/auth/**       → Público
+
+/contacts/**   → USER ou ADMIN
+
+/users/**      → ADMIN
+
+/outros        → Autenticado
+```
+
+### Respostas de segurança
+
+```text
+Sem JWT
+   ↓
+401 Unauthorized
+
+JWT válido + permissão
+   ↓
+200 OK
+
+JWT válido + sem permissão
+   ↓
+403 Forbidden
+```
+
+---
+
+## 🗄️ Banco de dados
+
+O projeto utiliza:
+
+**PostgreSQL 17**
+
+O versionamento do banco é realizado através do:
+
+**Flyway**
+
+As alterações estruturais do banco são controladas por migrations.
+
+Exemplo:
+
+```text
+db/migration
+├── V1__...
+├── V2__...
+├── V3__...
+├── ...
+└── V8__...
+```
+
+Durante a inicialização, o Flyway verifica automaticamente o estado do banco e executa as migrations pendentes.
+
+---
+
+## 🐳 Docker
+
+A aplicação pode ser executada utilizando Docker Compose.
+
+Arquitetura:
+
+```text
+┌──────────────────────────────┐
+│       Docker Compose         │
+│                              │
+│  ┌────────────────────────┐  │
+│  │    phonebook-api       │  │
+│  │    Spring Boot         │  │
+│  │    Port 8080           │  │
+│  └───────────┬────────────┘  │
+│              │               │
+│              ▼               │
+│  ┌────────────────────────┐  │
+│  │     PostgreSQL 17      │  │
+│  │     Port 5432          │  │
+│  └────────────────────────┘  │
+└──────────────────────────────┘
+```
+
+### Executar o projeto
+
+Clone o repositório:
+
+```bash
+git clone https://github.com/ericvpereira/springboot-phonebook.git
+```
+
+Entre na pasta:
+
+```bash
+cd springboot-phonebook
+```
+
+Configure o arquivo `.env` com suas credenciais.
+
+Depois execute:
+
+```bash
+docker compose up --build
+```
+
+A API estará disponível em:
+
+```text
+http://localhost:8080
+```
+
+Para parar os containers:
+
+```bash
+docker compose down
+```
+
+---
+
+## ⚙️ Executando sem Docker
+
+É possível executar a aplicação utilizando Maven.
+
+No Windows:
+
+```powershell
+.\mvnw clean package
+```
+
+Executar os testes:
+
+```powershell
+.\mvnw clean test
+```
+
+Executar a aplicação:
+
+```powershell
+.\mvnw spring-boot:run
+```
+
+---
+
+## 🧪 Testes
+
+O projeto possui testes automatizados utilizando:
+
+* JUnit 5
+* Mockito
+* Spring Boot Test
+* Spring Security Test
+* MockMvc
+* H2 para cenários de teste
+
+Atualmente:
+
+```text
+34 testes
+0 falhas
+0 erros
+0 ignorados
+```
+
+Resultado:
+
+```text
+BUILD SUCCESS
+```
+
+Os testes cobrem diferentes partes da aplicação, incluindo:
+
+* Services
+* Controllers
+* autenticação
+* JWT
+* Spring Security
+* autorização
+* tratamento de acesso
+* regras de negócio
+
+---
+
+## 🔎 Exemplos de endpoints
+
+### 🔐 Registrar usuário
 
 ```http
 POST /auth/register
-Content-Type: application/json
 ```
 
 Exemplo:
@@ -204,11 +362,10 @@ Exemplo:
 
 ---
 
-## Login
+### 🔑 Login
 
 ```http
 POST /auth/login
-Content-Type: application/json
 ```
 
 Exemplo:
@@ -224,309 +381,179 @@ Resposta:
 
 ```json
 {
-  "token": "eyJhbGciOiJIUz..."
+  "token": "JWT_TOKEN"
 }
 ```
 
-O token deve ser enviado nas requisições protegidas:
+---
+
+### 📇 Listar contatos
 
 ```http
-Authorization: Bearer <JWT>
+GET /contacts
+```
+
+Necessário:
+
+```http
+Authorization: Bearer JWT_TOKEN
 ```
 
 ---
 
-# 📡 Endpoints principais
+### ➕ Criar contato
 
-## 🔓 Autenticação
+```http
+POST /contacts
+```
 
-| Método | Endpoint         | Acesso  |
-| ------ | ---------------- | ------- |
-| POST   | `/auth/register` | Público |
-| POST   | `/auth/login`    | Público |
+Necessário:
 
----
-
-## 📇 Contatos
-
-| Método | Endpoint         | Acesso      |
-| ------ | ---------------- | ----------- |
-| GET    | `/contacts`      | Autenticado |
-| GET    | `/contacts/{id}` | Autenticado |
-| POST   | `/contacts`      | Autenticado |
-| PUT    | `/contacts/{id}` | Autenticado |
-| DELETE | `/contacts/{id}` | Autenticado |
-
-> Os endpoints disponíveis podem variar de acordo com a implementação atual do controller.
-
----
-
-## 👥 Usuários
-
-| Método | Endpoint    | Acesso |
-| ------ | ----------- | ------ |
-| GET    | `/users/**` | ADMIN  |
-
----
-
-# 🚦 Tratamento de respostas HTTP
-
-A API utiliza códigos HTTP apropriados para representar o resultado das operações.
-
-|             Código | Situação                            |
-| -----------------: | ----------------------------------- |
-|           `200 OK` | Requisição processada com sucesso   |
-|      `201 Created` | Recurso criado                      |
-|  `400 Bad Request` | Dados inválidos                     |
-| `401 Unauthorized` | Usuário não autenticado             |
-|    `403 Forbidden` | Usuário autenticado sem permissão   |
-|    `404 Not Found` | Recurso não encontrado              |
-|     `409 Conflict` | Conflito, como usuário já existente |
-
-Exemplo de conflito:
-
-```json
-{
-  "timestamp": "2026-08-29T22:20:00",
-  "status": 409,
-  "message": "Usuário já existe"
-}
+```http
+Authorization: Bearer JWT_TOKEN
 ```
 
 ---
 
-# 🧩 Tratamento global de exceções
+### 🔄 Atualizar contato
 
-As exceções da aplicação são centralizadas através de `@ControllerAdvice`.
-
-Entre os cenários tratados estão:
-
-* `ContactNotFoundException`
-* `UserAlreadyExistsException`
-* Erros de validação
-* Respostas padronizadas da API
-
-Isso evita que a aplicação retorne respostas inconsistentes para diferentes erros.
-
----
-
-# 🗄️ Banco de dados
-
-O projeto utiliza:
-
-**PostgreSQL 17**
-
-A persistência é realizada através de:
-
-* Spring Data JPA
-* Hibernate
-* PostgreSQL Driver
-
-O Hibernate está configurado para validar a estrutura do banco:
-
-```properties
-spring.jpa.hibernate.ddl-auto=validate
+```http
+PUT /contacts/{id}
 ```
 
-A criação e alteração das tabelas é responsabilidade do **Flyway**.
+Necessário:
 
----
-
-# 🛫 Flyway
-
-As alterações do banco são controladas através de migrations versionadas.
-
-Exemplo:
-
-```text
-src/main/resources/db/migration/
-
-V1__...
-V2__...
-V3__...
-...
-V8__...
-```
-
-Na inicialização da aplicação, o Flyway verifica as migrations disponíveis e aplica somente aquelas que ainda não foram executadas.
-
-Isso permite manter o banco sincronizado com o código da aplicação.
-
----
-
-# 🐳 Docker
-
-A aplicação pode ser executada utilizando Docker Compose.
-
-A arquitetura de containers é:
-
-```text
-┌─────────────────────────────┐
-│       Docker Compose        │
-│                             │
-│  ┌───────────────────────┐  │
-│  │    phonebook-api      │  │
-│  │    Spring Boot        │  │
-│  │    Port: 8080         │  │
-│  └───────────┬───────────┘  │
-│              │              │
-│              ▼              │
-│  ┌───────────────────────┐  │
-│  │     phonebook-db      │  │
-│  │     PostgreSQL 17     │  │
-│  │     Port: 5432        │  │
-│  └───────────────────────┘  │
-│                             │
-└─────────────────────────────┘
-```
-
-## Executando com Docker
-
-Clone o projeto:
-
-```bash
-git clone https://github.com/ericvpereira/springboot-phonebook.git
-```
-
-Entre no diretório:
-
-```bash
-cd springboot-phonebook
-```
-
-Execute:
-
-```bash
-docker compose up --build
-```
-
-A aplicação ficará disponível em:
-
-```text
-http://localhost:8080
-```
-
-Para executar em segundo plano:
-
-```bash
-docker compose up -d --build
-```
-
-Para parar os containers:
-
-```bash
-docker compose down
+```http
+Authorization: Bearer JWT_TOKEN
 ```
 
 ---
 
-# 📚 Swagger / OpenAPI
+### ❌ Excluir contato
 
-A API possui documentação através do **Swagger/OpenAPI**.
+```http
+DELETE /contacts/{id}
+```
 
-Após iniciar a aplicação, acesse:
+Necessário:
+
+```http
+Authorization: Bearer JWT_TOKEN
+```
+
+---
+
+## 📚 Documentação da API
+
+A aplicação utiliza **OpenAPI / Swagger** para documentação dos endpoints.
+
+Com a aplicação executando, acesse:
 
 ```text
 http://localhost:8080/swagger-ui/index.html
 ```
 
-O Swagger permite:
+A documentação permite visualizar e testar os endpoints da API.
 
-* Visualizar os endpoints;
-* Consultar parâmetros;
-* Enviar requisições;
-* Testar autenticação;
-* Testar endpoints protegidos;
-* Visualizar modelos de request/response.
+---
 
-Para endpoints protegidos, utilize o botão **Authorize** e informe:
+## 🧰 Tecnologias utilizadas
+
+### Backend
+
+* Java 17
+* Spring Boot 3.5.3
+* Spring Web
+* Spring Data JPA
+* Hibernate
+* Spring Validation
+* Spring Security
+* JWT
+
+### Banco de dados
+
+* PostgreSQL 17
+* Flyway
+
+### Testes
+
+* JUnit 5
+* Mockito
+* Spring Boot Test
+* Spring Security Test
+* MockMvc
+* H2
+
+### Infraestrutura
+
+* Docker
+* Docker Compose
+* Maven
+
+### Documentação
+
+* OpenAPI
+* Swagger UI
+
+---
+
+## 📂 Estrutura do projeto
 
 ```text
-Bearer <JWT>
+phonebook/
+│
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/eric/phonebook/
+│   │   │       ├── config/
+│   │   │       ├── controllers/
+│   │   │       ├── dto/
+│   │   │       ├── entities/
+│   │   │       ├── enums/
+│   │   │       ├── exceptions/
+│   │   │       ├── repositories/
+│   │   │       ├── security/
+│   │   │       └── services/
+│   │   │
+│   │   └── resources/
+│   │       ├── db/
+│   │       │   └── migration/
+│   │       └── application.properties
+│   │
+│   └── test/
+│
+├── .env.example
+├── .gitignore
+├── docker-compose.yml
+├── Dockerfile
+├── mvnw
+├── mvnw.cmd
+├── pom.xml
+└── README.md
 ```
 
 ---
 
-# 🧪 Testes
+## 🔒 Variáveis de ambiente
 
-O projeto possui testes automatizados utilizando JUnit e ferramentas do ecossistema Spring.
+Informações sensíveis não devem ser versionadas.
 
-Resultado atual da suíte:
+Utilize:
 
 ```text
-Tests run: 34
-Failures: 0
-Errors: 0
-Skipped: 0
-
-BUILD SUCCESS
+.env
 ```
 
-Os testes abrangem componentes importantes da aplicação, incluindo:
+para as configurações locais.
 
-* Services;
-* Segurança;
-* JWT;
-* Autenticação;
-* Regras de negócio.
+O projeto disponibiliza:
 
----
-
-# ▶️ Executando localmente
-
-## Pré-requisitos
-
-Para executar sem Docker, é necessário possuir:
-
-* Java 17+
-* Maven ou Maven Wrapper
-* PostgreSQL
-
-Clone o projeto:
-
-```bash
-git clone https://github.com/ericvpereira/springboot-phonebook.git
+```text
+.env.example
 ```
 
-Entre no diretório:
-
-```bash
-cd springboot-phonebook
-```
-
-Execute os testes:
-
-### Windows
-
-```powershell
-.\mvnw clean test
-```
-
-### Linux/macOS
-
-```bash
-./mvnw clean test
-```
-
-Execute a aplicação:
-
-### Windows
-
-```powershell
-.\mvnw spring-boot:run
-```
-
-### Linux/macOS
-
-```bash
-./mvnw spring-boot:run
-```
-
----
-
-# 🔧 Configuração
-
-As configurações sensíveis devem ser fornecidas através de variáveis de ambiente.
+como modelo das variáveis necessárias.
 
 Exemplo:
 
@@ -535,175 +562,106 @@ POSTGRES_DB=phonebook
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=sua_senha
 
-JWT_SECRET=sua_chave_secreta
-JWT_EXPIRATION=3600000
+SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/phonebook
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD=sua_senha
+
+SECURITY_JWT_SECRET=sua_chave_secreta
+SECURITY_JWT_EXPIRATION=86400000
 ```
 
-> ⚠️ Não coloque senhas, tokens ou chaves JWT reais no GitHub.
+> ⚠️ Nunca publique senhas, tokens ou chaves JWT reais no GitHub.
 
 ---
 
-# 📂 Estrutura de camadas
+## 📈 Objetivos de aprendizado
 
-O projeto segue uma separação de responsabilidades:
-
-```text
-Controller
-    ↓
-Service
-    ↓
-Repository
-    ↓
-Database
-```
-
-### Controller
-
-Responsável por receber as requisições HTTP e retornar as respostas.
-
-### Service
-
-Responsável pelas regras de negócio.
-
-### Repository
-
-Responsável pelo acesso aos dados através do Spring Data JPA.
-
-### Entity
-
-Representa as entidades persistidas no banco de dados.
-
-### DTO
-
-Responsável por transportar dados entre cliente e aplicação sem expor diretamente as entidades.
-
-### Security
-
-Responsável por:
-
-* autenticação;
-* geração de JWT;
-* validação do token;
-* carregamento dos usuários;
-* autorização.
-
-### Exceptions
-
-Centraliza as exceções e respostas de erro da API.
-
----
-
-# 📈 Possíveis melhorias futuras
-
-Algumas funcionalidades podem ser adicionadas futuramente:
-
-* Paginação de contatos;
-* Ordenação e filtros avançados;
-* Refresh Token;
-* Rate Limiting;
-* Auditoria de operações;
-* Testes de integração adicionais;
-* CI/CD com GitHub Actions;
-* Monitoramento com Spring Boot Actuator;
-* Logs estruturados;
-* Deploy em ambiente cloud.
-
-Essas funcionalidades não são necessárias para o funcionamento atual da API, mas representam possíveis evoluções do projeto.
-
----
-
-# 🎯 O que este projeto demonstra
-
-Este projeto demonstra conhecimentos práticos em:
+Este projeto foi desenvolvido para consolidar conhecimentos em:
 
 ```text
 Java
- │
- ├── POO
- ├── Collections
- ├── Exceptions
- └── Boas práticas
-
+  ↓
 Spring Boot
- │
- ├── REST API
- ├── Dependency Injection
- ├── Validation
- └── Configuration
-
-Spring Data
- │
- ├── JPA
- ├── Hibernate
- └── Repositories
-
-Security
- │
- ├── Spring Security
- ├── Authentication
- ├── Authorization
- ├── Roles
- └── JWT
-
-Database
- │
- ├── PostgreSQL
- └── Flyway
-
-DevOps
- │
- ├── Docker
- └── Docker Compose
-
-Testing
- │
- ├── JUnit
- ├── Mockito
- └── Spring Security Test
-
-Documentation
- │
- └── Swagger / OpenAPI
+  ↓
+REST API
+  ↓
+JPA / Hibernate
+  ↓
+PostgreSQL
+  ↓
+Flyway
+  ↓
+Spring Security
+  ↓
+JWT
+  ↓
+Testes
+  ↓
+Docker
 ```
 
 ---
 
-# 👨‍💻 Autor
+## 🚧 Possíveis evoluções
+
+Algumas melhorias podem ser adicionadas futuramente:
+
+* Paginação de contatos
+* Ordenação e filtros avançados
+* Refresh Token
+* Rate limiting
+* Cache
+* CI/CD com GitHub Actions
+* Monitoramento e observabilidade
+* Testcontainers para testes com PostgreSQL real
+* Deploy em cloud
+
+Essas funcionalidades não são necessárias para o funcionamento atual da aplicação.
+
+---
+
+## 👨‍💻 Autor
 
 **Eric Vieira Pereira**
 
-Desenvolvedor com foco em **Java Backend** e desenvolvimento de APIs REST utilizando o ecossistema Spring.
-
-### Tecnologias de interesse
+Desenvolvedor Backend Java em formação, com foco em:
 
 ```text
 Java
 Spring Boot
 Spring Security
-JPA / Hibernate
+APIs REST
 PostgreSQL
 Docker
-REST API
-JWT
-Git
+Testes
 ```
 
----
+### GitHub
 
-## 📌 Projeto
-
-**Phonebook API**
-
-🔗 GitHub:
-
-https://github.com/ericvpereira/springboot-phonebook
+https://github.com/ericvpereira
 
 ---
 
-⭐ Se este projeto foi útil ou interessante, considere deixar uma estrela no repositório.
+## ⭐ Considerações finais
+
+Este projeto representa minha evolução no desenvolvimento backend utilizando o ecossistema Java e Spring.
+
+O objetivo principal foi construir uma API REST completa, aplicando conceitos utilizados em aplicações reais, como:
+
+* autenticação;
+* autorização;
+* persistência;
+* validação;
+* tratamento de exceções;
+* migrations;
+* testes automatizados;
+* containerização;
+* documentação de API.
+
+Se este projeto foi útil ou interessante, considere deixar uma ⭐ no repositório.
 
 ---
 
-### 📄 Licença
-
-Este projeto foi desenvolvido para fins de estudo, prática e portfólio.
+<p align="center">
+  <strong>☕ Java • Spring Boot • PostgreSQL • Docker • JWT</strong>
+</p>
