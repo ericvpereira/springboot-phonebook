@@ -18,4 +18,13 @@ public class ResourceExceptionHandler {
 
 		return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
 	}
+
+	@ExceptionHandler(UserAlreadyExistsException.class)
+	public ResponseEntity<StandardError> userAlreadyExists(UserAlreadyExistsException e) {
+
+		StandardError error = new StandardError(Instant.now(), HttpStatus.CONFLICT.value(), "User already exists",
+				e.getMessage());
+
+		return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
+	}
 }
