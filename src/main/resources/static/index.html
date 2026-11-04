@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>Phonebook | Sua agenda inteligente</title>
+  <link rel="stylesheet" href="/assets/phonebook.css">
+  <script src="/assets/phonebook.js" defer></script>
+</head>
+<body>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <section id="auth-screen" class="auth-screen">
+    <div class="auth-brand"><div class="brand-mark">✦</div><span>phonebook<span class="brand-dot">.</span></span></div>
+    <div class="auth-layout">
+      <div class="auth-intro"><div class="eyebrow">SUA AGENDA, ORGANIZADA</div><h1>Conexões que<br><em>importam.</em></h1><p>Todos os seus contatos em um lugar seguro. Simples de encontrar, fácil de organizar.</p><div class="intro-card"><div class="avatar-stack"><span>AM</span><span>LC</span><span>RB</span></div><span>Uma forma melhor de cuidar das suas conexões.</span></div></div>
+      <div class="auth-card">
+        <div class="card-icon">✦</div><h2 id="auth-title">Boas-vindas de volta</h2><p id="auth-subtitle">Entre na sua conta para acessar seus contatos.</p>
+        <form id="auth-form">
+          <label for="username">Nome de usuário</label><input id="username" name="username" autocomplete="username" placeholder="Seu usuário" required maxlength="80">
+          <label for="password">Senha</label><input id="password" name="password" type="password" autocomplete="current-password" placeholder="Sua senha" required>
+          <button class="primary full" id="auth-submit" type="submit">Entrar na agenda <span>→</span></button>
+        </form>
+        <p class="auth-switch"><span id="auth-switch-label">Ainda não tem uma conta?</span> <button id="toggle-auth" class="text-button" type="button">Criar conta</button></p>
+      </div>
+    </div>
+    <footer>Phonebook · Desenvolvido com Spring Boot & JWT</footer>
+  </section>
+
+  <div id="app-screen" class="app-shell hidden">
+    <aside class="sidebar">
+      <div class="sidebar-logo"><div class="brand-mark">✦</div><span>phonebook<span class="brand-dot">.</span></span></div>
+      <div class="sidebar-section">ESPAÇO DE TRABALHO</div>
+      <button class="nav-item selected" id="nav-contacts"><span>▦</span> Todos os contatos</button>
+      <button class="nav-item" id="nav-favorites"><span>♡</span> Favoritos</button>
+      <div class="sidebar-bottom"><div class="security-note"><span>◈</span><div><strong>Seus contatos, protegidos</strong><small>Autenticação segura com JWT</small></div></div><button class="logout" id="logout">↪ &nbsp; Sair da conta</button></div>
+    </aside>
+    <main class="main">
+      <header class="topbar"><div class="breadcrumb">Workspace <span>/</span> <strong>Contatos</strong></div><div class="profile"><div class="online-dot"></div><span id="current-user">Minha conta</span><div class="profile-avatar" id="user-initial">U</div></div></header>
+      <div class="content">
+        <div class="page-header"><div><div class="eyebrow purple">VISÃO GERAL</div><h1>Seus contatos<span class="brand-dot">.</span></h1><p>Gerencie suas conexões de forma simples e organizada.</p></div><button class="primary" id="new-contact">＋ Novo contato</button></div>
+        <div class="stats"><div class="stat-card"><span class="stat-label">TOTAL DE CONTATOS</span><strong id="stat-total">—</strong><small>Na sua agenda</small><span class="stat-icon">♙</span></div><div class="stat-card"><span class="stat-label">FAVORITOS</span><strong id="stat-favorites">0</strong><small>Salvos neste navegador</small><span class="stat-icon">♡</span></div><div class="stat-card"><span class="stat-label">CONTATOS DE TRABALHO</span><strong id="stat-work">—</strong><small>Conexões profissionais</small><span class="stat-icon">▤</span></div></div>
+        <section class="contacts-panel"><div class="panel-head"><div><h2 id="list-title">Minha agenda</h2><p id="list-subtitle">Todos os seus contatos em um só lugar</p></div><div class="panel-actions"><label class="search">⌕ <input id="search" type="search" placeholder="Buscar contato..." aria-label="Buscar contatos"></label><select id="type-filter" aria-label="Filtrar por categoria"><option value="">Todas as categorias</option><option value="FAMILY">Família</option><option value="FRIEND">Amigos</option><option value="WORK">Trabalho</option><option value="OTHER">Outros</option></select></div></div><div id="loading" class="empty">Carregando contatos...</div><div id="contact-list" class="contact-list"></div><div class="list-footer"><span id="results-count">0 contatos</span><button class="text-button" id="refresh">↻ Atualizar</button></div></section>
+      </div>
+    </main>
+  </div>
+  <dialog id="contact-dialog" class="modal"><form id="contact-form"><div class="modal-heading"><div><h2 id="modal-title">Novo contato</h2><p>Preencha os dados abaixo para salvar na agenda.</p></div><button class="icon-button" type="button" id="close-modal" aria-label="Fechar">×</button></div><div class="fields"><div class="field wide"><label for="contact-name">Nome completo *</label><input id="contact-name" required maxlength="100" placeholder="Ex.: Ana Martins"></div><div class="field"><label for="contact-phone">Telefone</label><input id="contact-phone" type="tel" maxlength="20" placeholder="(11) 99999-9999"></div><div class="field"><label for="contact-email">E-mail</label><input id="contact-email" type="email" maxlength="100" placeholder="ana@email.com"></div><div class="field wide"><label for="contact-type">Categoria</label><select id="contact-type"><option value="FRIEND">Amigos</option><option value="FAMILY">Família</option><option value="WORK">Trabalho</option><option value="OTHER">Outros</option></select></div><div class="field wide"><div class="field-divider">Endereço (opcional)</div></div><div class="field wide"><label for="contact-street">Rua</label><input id="contact-street" placeholder="Rua e número"></div><div class="field"><label for="contact-city">Cidade</label><input id="contact-city"></div><div class="field"><label for="contact-state">Estado</label><input id="contact-state"></div><div class="field wide"><label for="contact-zip">CEP</label><input id="contact-zip" inputmode="numeric" placeholder="00000-000"></div></div><div class="modal-actions"><button type="button" class="secondary" id="cancel-modal">Cancelar</button><button type="submit" class="primary" id="save-contact">Salvar contato</button></div></form></dialog>
+</body>
+</html>

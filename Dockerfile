@@ -1,13 +1,13 @@
-FROM eclipse-temurin:17-jdk
-
-WORKDIR /app
-
+FROM eclipse-temurin:17-jdk AS build
+WORKDIR /workspace
 COPY . .
+RUN chmod +x ./mvnw && ./mvnw -B -ntp clean package
 
-RUN chmod +x mvnw
-
-RUN ./mvnw clean package -DskipTests
-
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+RUN groupadd --system phonebook && useradd --system --gid phonebook phonebook
+COPY --from=build /workspace/target/phonebook-0.0.1-SNAPSHOT.jar /app/app.jar
+USER phonebook
 EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "target/phonebook-0.0.1-SNAPSHOT.jar"]
+ENV JAVA_TOOL_OPTIONS="-XX:MaxRAMPercentage=75.0 -Dfile.encoding=UTF-8"
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]

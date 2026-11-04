@@ -1,6 +1,7 @@
 package com.eric.phonebook.entities;
 
 import com.eric.phonebook.enums.ContactType;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embedded;
@@ -37,6 +38,14 @@ public class Contact extends BaseEntity {
 
 	@Embedded
 	private Address address;
+
+	@JsonIgnore
+	@Column(name = "owner_username", length = 80)
+	private String ownerUsername;
+
+	public String getOwnerUsername() { return ownerUsername; }
+
+	public void setOwnerUsername(String ownerUsername) { this.ownerUsername = ownerUsername; }
 
 	public Contact() {
 	}
