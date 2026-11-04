@@ -10,12 +10,12 @@ import org.springframework.security.config.annotation.method.configuration.Enabl
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.http.HttpMethod;
 
 import com.eric.phonebook.security.JwtAuthenticationFilter;
 
@@ -51,29 +51,11 @@ public class SecurityConfig {
 						// 401 - usuário não autenticado
 						.authenticationEntryPoint((request, response, authException) -> {
 
-							System.out.println("================================");
-							System.out.println(">>> AUTHENTICATION ERROR");
-							System.out.println("URI: " + request.getRequestURI());
-							System.out.println("ERRO: " + authException.getMessage());
-							System.out.println("================================");
-
 							response.sendError(HttpServletResponse.SC_UNAUTHORIZED);
 						})
 
 						// 403 - usuário autenticado, mas sem permissão
 						.accessDeniedHandler((request, response, accessDeniedException) -> {
-
-							System.out.println("================================");
-							System.out.println(">>> ACCESS DENIED HANDLER");
-							System.out.println("URI: " + request.getRequestURI());
-
-							System.out.println("USUARIO: " + SecurityContextHolder.getContext().getAuthentication());
-
-							System.out.println("EXCEPTION: " + accessDeniedException.getClass().getName());
-
-							System.out.println("MENSAGEM: " + accessDeniedException.getMessage());
-
-							System.out.println("================================");
 
 							response.sendError(HttpServletResponse.SC_FORBIDDEN);
 						}))
@@ -83,7 +65,7 @@ public class SecurityConfig {
 
 						// Endpoints públicos
 						.requestMatchers("/auth/login", "/auth/register", "/swagger-ui/**", "/swagger-ui.html",
-								"/v3/api-docs/**", "/error", "/", "/index.html", "/assets/**", "/favicon.ico")
+								"/v3/api-docs/**", "/error", "/actuator/health", "/actuator/health/**", "/", "/index.html", "/assets/**", "/favicon.ico")
 						.permitAll()
 
 						// Somente ADMIN
