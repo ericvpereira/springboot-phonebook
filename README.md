@@ -1,3 +1,5 @@
+> **Full-stack update:** este repositório agora contém uma interface responsiva na raiz `/`, com login JWT, cadastro e gestão de contatos. Para executar em produção, consulte [docs/DEPLOY.md](docs/DEPLOY.md). O workflow `CI - Phonebook` executa testes Java, verificações de frontend e build Docker. Antes de migrar um banco já utilizado, leia os alertas sobre o antigo admin de senha conhecida e os contatos sem proprietário. O relatório de 34 testes abaixo representa uma execução histórica, não a validação da branch atual.
+
 # ⚡ PHONEBOOK API // BACKEND SYSTEM
 
 <p align="center">
