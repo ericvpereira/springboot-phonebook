@@ -1,20 +1,21 @@
 package com.eric.phonebook.services;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.eric.phonebook.entities.Contact;
 import com.eric.phonebook.enums.ContactType;
@@ -23,116 +24,82 @@ import com.eric.phonebook.repositories.ContactRepository;
 
 @ExtendWith(MockitoExtension.class)
 class ContactServiceTest {
+    @Mock private ContactRepository repository;
+    @InjectMocks private ContactService service;
+    private Contact contact;
 
-	@Mock
-	private ContactRepository repository;
+    @BeforeEach
+    void setUp() {
+        SecurityContextHolder.getContext().setAuthentication(
+                new UsernamePasswordAuthenticationToken("eric", null, List.of()));
+        contact = new Contact("Eric", "11999999999", "eric@email.com", ContactType.FRIEND);
+        contact.setId(1L);
+        contact.setOwnerUsername("eric");
+    }
 
-	@InjectMocks
-	private ContactService service;
+    @AfterEach
+    void cleanup() { SecurityContextHolder.clearContext(); }
 
-	private Contact contact;
+    @Test
+    void shouldFindAllContacts() {
+        when(repository.findAllByOwnerUsernameOrderByNameAsc("eric")).thenReturn(List.of(contact));
+        List<Contact> result = service.findAll();
+        assertEquals(1, result.size());
+        verify(repository).findAllByOwnerUsernameOrderByNameAsc("eric");
+    }
 
-	@BeforeEach
-	void setUp() {
+    @Test
+    void shouldFindContactById() {
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.of(contact));
+        assertEquals("Eric", service.findById(1L).getName());
+    }
 
-		contact = new Contact("Eric", "11999999999", "eric@email.com", ContactType.FRIEND);
+    @Test
+    void shouldThrowExceptionWhenContactDoesNotExist() {
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.empty());
+        assertThrows(ContactNotFoundException.class, () -> service.findById(1L));
+    }
 
-		contact.setId(1L);
-	}
+    @Test
+    void shouldInsertContact() {
+        when(repository.save(any(Contact.class))).thenAnswer(inv -> inv.getArgument(0));
+        Contact result = service.insert(contact);
+        assertNull(result.getId());
+        assertEquals("eric", result.getOwnerUsername());
+        verify(repository).save(contact);
+    }
 
-	@Test
-	void shouldFindAllContacts() {
+    @Test
+    void shouldUpdateContact() {
+        Contact updated = new Contact("Eric Pereira", "11888888888", "new@email.com", ContactType.WORK);
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.of(contact));
+        when(repository.save(contact)).thenReturn(contact);
+        Contact result = service.update(1L,updated);
+        assertEquals("Eric Pereira",result.getName());
+        assertEquals(ContactType.WORK,result.getType());
+        assertEquals("eric",result.getOwnerUsername());
+    }
 
-		when(repository.findAll()).thenReturn(Arrays.asList(contact));
+    @Test
+    void shouldDeleteContact() {
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.of(contact));
+        service.delete(1L);
+        verify(repository).delete(contact);
+    }
 
-		List<Contact> result = service.findAll();
+    @Test
+    void shouldThrowExceptionWhenDeletingNonExistingContact() {
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.empty());
+        assertThrows(ContactNotFoundException.class, () -> service.delete(1L));
+        verify(repository,never()).delete(any(Contact.class));
+    }
 
-		assertEquals(1, result.size());
-		assertEquals("Eric", result.get(0).getName());
-
-		verify(repository, times(1)).findAll();
-	}
-
-	@Test
-	void shouldFindContactById() {
-
-		when(repository.findById(1L)).thenReturn(Optional.of(contact));
-
-		Contact result = service.findById(1L);
-
-		assertEquals(1L, result.getId());
-		assertEquals("Eric", result.getName());
-
-		verify(repository).findById(1L);
-	}
-
-	@Test
-	void shouldThrowExceptionWhenContactDoesNotExist() {
-
-		when(repository.findById(1L)).thenReturn(Optional.empty());
-
-		assertThrows(ContactNotFoundException.class, () -> service.findById(1L));
-
-		verify(repository).findById(1L);
-	}
-
-	@Test
-	void shouldInsertContact() {
-
-		when(repository.save(any(Contact.class))).thenReturn(contact);
-
-		Contact result = service.insert(contact);
-
-		assertEquals("Eric", result.getName());
-
-		verify(repository).save(contact);
-	}
-
-	@Test
-	void shouldUpdateContact() {
-
-		Contact updatedContact = new Contact("Eric Pereira", "11888888888", "ericpereira@email.com", ContactType.WORK);
-
-		when(repository.findById(1L)).thenReturn(Optional.of(contact));
-
-		when(repository.save(any(Contact.class))).thenReturn(contact);
-
-		Contact result = service.update(1L, updatedContact);
-
-		assertEquals("Eric Pereira", result.getName());
-
-		assertEquals("11888888888", result.getPhone());
-
-		assertEquals("ericpereira@email.com", result.getEmail());
-
-		assertEquals(ContactType.WORK, result.getType());
-
-		verify(repository).findById(1L);
-		verify(repository).save(contact);
-	}
-
-	@Test
-	void shouldDeleteContact() {
-
-		when(repository.existsById(1L)).thenReturn(true);
-
-		doNothing().when(repository).deleteById(1L);
-
-		service.delete(1L);
-
-		verify(repository).existsById(1L);
-		verify(repository).deleteById(1L);
-	}
-
-	@Test
-	void shouldThrowExceptionWhenDeletingNonExistingContact() {
-
-		when(repository.existsById(1L)).thenReturn(false);
-
-		assertThrows(ContactNotFoundException.class, () -> service.delete(1L));
-
-		verify(repository).existsById(1L);
-
-		verify(repository, never()).deleteById(any());
-	}
+    @Test
+    void shouldNotAccessOtherUsersContacts() {
+        when(repository.findByIdAndOwnerUsername(1L,"eric")).thenReturn(Optional.empty());
+        assertThrows(ContactNotFoundException.class, () -> service.update(1L,
+                new Contact("Hacker","123","hack@example.com",ContactType.OTHER)));
+        verify(repository,never()).save(any(Contact.class));
+        verify(repository,never()).findById(1L);
+    }
 }
