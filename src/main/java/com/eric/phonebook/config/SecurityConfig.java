@@ -83,7 +83,7 @@ public class SecurityConfig {
 
 						// Endpoints públicos
 						.requestMatchers("/auth/login", "/auth/register", "/swagger-ui/**", "/swagger-ui.html",
-								"/v3/api-docs/**", "/error")
+								"/v3/api-docs/**", "/error", "/", "/index.html", "/assets/**", "/favicon.ico")
 						.permitAll()
 
 						// Somente ADMIN
