@@ -61,4 +61,23 @@ class PhonebookWebIntegrationTest {
         mockMvc.perform(delete("/contacts/" + id).with(user("alice").roles("ADMIN")))
                 .andExpect(status().isNoContent());
     }
+    @Test
+    void registrationLoginAndJwtAuthenticatedRequest() throws Exception {
+        String credentials = "{\"username\":\"integration_user\",\"password\":\"strongPassword123!\"}";
+        mockMvc.perform(post("/auth/register").contentType(MediaType.APPLICATION_JSON)
+                .content(credentials)).andExpect(status().isOk());
+
+        String login = mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON).content(credentials))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token").isNotEmpty())
+                .andReturn().getResponse().getContentAsString();
+        String token = mapper.readTree(login).path("token").asText();
+        mockMvc.perform(get("/contacts").header("Authorization", "Bearer " + token))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(0));
+        mockMvc.perform(get("/contacts").header("Authorization", "Bearer invalid-token"))
+                .andExpect(status().isUnauthorized());
+    }
+
 }
